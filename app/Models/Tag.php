@@ -9,14 +9,11 @@ class Tag extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'budget_allocation'];
+    protected $fillable = ['name', 'amount'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-    public function budget()
-    {
-        return $this->hasOne(Budget::class);
-    }
+    
 }

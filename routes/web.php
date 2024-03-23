@@ -16,11 +16,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/users/{id}/edit', [HomeController::class, 'edit'])->name('admin.users.edit');
     Route::put('/admin/users/{id}', [HomeController::class, 'update'])->name('admin.users.update');
     Route::get('/admin', [HomeController::class, 'index'])->name('admin.index');
-
-    
-
-
-
+    Route::post('/save-budget', [HomeController::class, 'saveBudget'])->name('save-budget');
+    Route::post('/save-categorie', [HomeController::class, 'savecategorie'])->name('save-categorie');
+       
 });
-
 require __DIR__.'/auth.php';

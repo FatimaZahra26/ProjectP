@@ -1,8 +1,14 @@
 @extends('layouts.app')
 @php
     use App\Models\Tag;
+    use Illuminate\Support\Facades\DB;
+    use App\Http\Controllers\HomeController;
+
 @endphp
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+
+
+
 
 <div class="sidebar">
     <div class="profile">
@@ -41,7 +47,7 @@
             <span class="item">Settings</span>
         </a>
     </li>
-        <form method="POST" action="{{ route('logout') }}">
+        <form method="POST" action="{{ route('save-budget') }}">
                         @csrf
                         <li>
                       
@@ -54,7 +60,7 @@
                         </x-responsive-nav-link>
                     
                 </li>
-                    </form>
+         </form>
     </ul>
 </div>
 @section('content')
@@ -65,16 +71,188 @@
             <p style="color: #333">{{ $todayDate }}</p>
             </div>
             <!-- Content -->
-            <div class="col-md-9">
-                
-                <div class="balance-section">
+            <div class="balance-section">
+            <form name="cc"  method="POST" action="{{ route('save-budget') }}">
+                @csrf
+                <label for="category">Budget:</label><br>
+                <input type="text" id="category" name="category"><br><br>
+                <label for="duration">Durée:</label><br>
+                <select id="duration" name="duration">
+                    <option value="week">Une semaine</option>
+                    <option value="month">Un mois</option>
+                </select><br><br>
+                <button id="btn-a" type="submit">Envoyer</button>
+            </form>
+            <form method="POST" action="{{ route('save-categorie') }}">
+                @csrf
+                    <h1 id="h1">Categorie:</h1>
+                    <div class="input-group">
+                    <i class="fas fa-tasks"></i><input type="text" name="name" value="Transport">
+<input type="text" name="amount" id="lbl1" class="transport-input" placeholder="Entrer le budget">
+                    </div>
+                    <!-- <div class="input-group-ffd">
+                    <i id="food" class="fas fa-utensils"></i><label name="name">Food</label><input type="text" id="lbl2" name="amount" class="food-input" placeholder="Entrer le budget">
+                    </div>
+                    <div class="input-group-vetment">
+                    <i id="vetement" class="fas fa-tshirt"></i><label name="name">Vetement</label><input type="text" id="lbl3" name="amount" class="clothes-input" placeholder="Entrer le budget">
                     
+                    </div> -->
+                    <button type="submit" class="save-btn">Enregistrer</button>
+                    
+            </form>
+                    <!-- Section pour afficher les catégories -->
+<div class="categories-section">
+    <h2>Catégories enregistrées:</h2>
+    <table >
+        <thead>
+            <tr>
+                <th>Nom de la catégorie</th>
+                <th>Montant</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($categories as $category)
+            <tr>
+                <td>{{ $category->name }}</td>
+                <td>{{ $category->amount }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
+<!-- Section pour afficher les budgets -->
+                    <div class="budget-section">
+                        <h2>Budgets enregistrés:</h2>
+                        
+                                @foreach($budgets as $budget)
+                                <p id="p1">le budget initial:
+                                <p id="budget-initial"></p>
+                                </p>
+                                <p id="p1">le reste:</p>
+                                <span class="cadre">{{ $budget->total_budget }}</span>
+                                @endforeach
+                                
+                            
+                    </div>
+
+                    
+
                 </div>
             </div>
+            
         </div> 
     </div>
     @endsection
     <style>
+        .cadre {
+        border: 2px solid black; /* Définir une bordure de 2 pixels solide noire */
+        padding: 5px; /* Ajouter un espace de remplissage autour du contenu */
+        display: inline-block; /* Permettre au cadre de s'ajuster à la taille du contenu */
+        font-size: 24px; /* Augmenter la taille de la police */
+        box-shadow: 3px 3px 5px rgb(5, 68, 104);
+        width: 100px;
+        padding-left: 40px;
+        margin-left:100px;
+        position:relative;
+        bottom:50px;
+        }
+        #p1{
+            font-size: 24px;
+            text-shadow: 2px 2px 5px rgb(5, 68, 104) ;
+        }
+        #btn-a{
+            background: rgb(5, 68, 104);
+            color:white;
+            width:100px;
+        }
+        #h1{
+            margin-right:660px;
+        }
+        table, td, th {
+        border: 1px solid;
+        }
+
+        table {
+        width: 100%;
+        border-collapse: collapse;
+        }
+        .save-btn{
+            margin-top:30px;
+            background: rgb(5, 68, 104);
+            color:white;
+            width:100px;
+        }
+        
+#add-new-category{
+    margin-top:20px;
+}
+.add-category-btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.add-category-btn i {
+    margin-right: 5px;
+}
+
+       
+        #transport{
+            margin-right:20px;
+        }
+        #food{
+            margin-right:20px;
+        }
+        #vetement{
+            margin-right:20px;
+        }
+        #lbl3{
+            margin-top:20px;
+            margin-left:30px;
+            width:400px;}
+          
+        #lbl2{
+            margin-top:20px;
+            margin-left:75px;
+            width:400px;
+           
+        }
+        #lbl1{
+           margin-left:40px;
+            width:400px;
+           
+        }
+        .input-group {
+        display: flex;
+        align-items: center;
+    }
+    .input-group i {
+        margin-right: 10px;
+    }
+    .budget-input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 200px;
+    }
+       input[type="text"], select {
+            width: 800px;
+            height: 30px;
+        }
+        #btn1 {
+        background-color: white;
+        color: black;
+        border: 2px solid #04AA6D;
+        margin-top: 40px;
+    
+        margin-left: 700px;
+        }
         #show-form-btn {
             padding: 10px 20px;
             background-color: #4CAF50;
@@ -296,21 +474,26 @@
             font-weight: bold;
             color: #4caf50;
         }
+        
     </style>
 
-<script>
-    document.getElementById('show-form-btn').addEventListener('click', function() {
-        // Toggle the display property of the form section
-        var formSection = document.getElementById('budget-form');
-        if (formSection.style.display === 'none') {
-            formSection.style.display = 'block';
-        } else {
-            formSection.style.display = 'none';
-        }
-    });
-</script>
+<script> 
+document.getElementById("btn-a").addEventListener("click", function(event) { 
+    event.preventDefault(); 
+    var budget = parseFloat(document.getElementById("category").value); 
+    var duration = document.getElementById("duration").value; 
+    // Afficher le budget initial dans l'élément HTML approprié 
+    document.getElementById("budget-initial").textContent = "Le budget initial : " + budget; });
+ </script>
+
+
+
+
+
+
+
         
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 
 
