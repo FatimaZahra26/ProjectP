@@ -19,6 +19,7 @@ class HomeController extends Controller
         
         // Récupérer les catégories
         $categories = Tag::where('user_id', auth()->id())->get();
+        
     
         $header = '';
     
@@ -59,48 +60,60 @@ class HomeController extends Controller
 {
     // Validez les données du formulaire
     $request->validate([
-        'category' => 'required',
+        'category' => 'required|numeric', // Assurez-vous que le champ category est numérique
         'duration' => 'required',
     ]);
 
     try {
-        // Enregistrez les données dans la base de données
+        // Récupérez l'utilisateur authentifié
+        $user = Auth::user();
 
-        $budget = new Budget();
-        $budget->user_id = Auth::id(); // ou utilisez $request->user()->id
+        // Vérifiez si l'utilisateur a déjà un budget enregistré
+        $budget = $user->budget;
+
+        if (!$budget) {
+            // Si l'utilisateur n'a pas de budget enregistré, créez un nouvel objet Budget
+            $budget = new Budget();
+            $budget->user_id = $user->id;
+        }
+
         // Récupérer le montant du budget depuis le formulaire
-        
-        $budget->total_budget = $request->input('category');
+        $budget->budget_initial = $request->input('category');
         $budget->budget_type = $request->input('duration');
         $budget->save();
-        $latestBudget = Budget::latest()->where('user_id', Auth::id())->first();
-        $latestBudget->bugget_initial= $request->input('category');
-
+        
+        
+        // Redirigez avec un message de succès
         return redirect()->back()->with('success', 'Budget enregistré avec succès');
     } catch (\Exception $e) {
-        // En cas d'erreur, renvoyez un message d'erreur
+        // En cas d'erreur, renvoyez un message d'erreur avec redirection
         return redirect()->back()->with('error', 'Une erreur s\'est produite lors de l\'enregistrement du budget');
     }
 }
+
 public function savecategorie(Request $request)
 { 
     try {
         // Enregistrez les données dans la base de données
 
         $category = new Tag();
-        $category->name =$request->input('name'); // Vous pouvez définir le nom directement car il semble statique dans le formulaire
+        $category->name = $request->input('name');
         $category->amount = $request->input('amount');
-        $category->user_id = Auth::id(); // ou utilisez $request->user()->id
+        $category->user_id = Auth::id();
         $category->save();
-        // Mettez à jour le budget initial
+
+        // Récupérez le dernier budget enregistré pour l'utilisateur authentifié
         $latestBudget = Budget::latest()->where('user_id', Auth::id())->first();
-        $latestBudget->total_budget -= $request->input('amount');
+
+        // Calculez le montant total des catégories déjà ajoutées pour cet utilisateur
+        $totalCategoryAmount = Tag::where('user_id', Auth::id())->sum('amount');
+
+        // Calculez le budget restant
+        $latestBudget->total_budget = $latestBudget->budget_initial - $totalCategoryAmount;
         $latestBudget->save();
-        
 
         return redirect()->back()->with('success', 'Catégorie enregistrée avec succès');
     } catch (\Exception $e) {
-        // En cas d'erreur, renvoyez un message d'erreur
         return redirect()->back()->with('error', 'Une erreur s\'est produite lors de l\'enregistrement de la catégorie');
     }
 }

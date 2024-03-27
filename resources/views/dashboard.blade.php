@@ -70,6 +70,7 @@
             <h2>Welcome, {{ auth()->user()->name }}</h2>
             <p style="color: #333">{{ $todayDate }}</p>
             </div>
+            
             <!-- Content -->
             <div class="balance-section">
             <form name="cc"  method="POST" action="{{ route('save-budget') }}">
@@ -101,35 +102,29 @@
                     
             </form>
                     <!-- Section pour afficher les catégories -->
-<div class="categories-section">
+                    <div class="categories-section">
     <h2>Catégories enregistrées:</h2>
-    <table >
-        <thead>
-            <tr>
-                <th>Nom de la catégorie</th>
-                <th>Montant</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($categories as $category)
-            <tr>
-                <td>{{ $category->name }}</td>
-                <td>{{ $category->amount }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div class="card-container">
+        @foreach($categories as $category)
+        <div class="card">
+            <h3>{{ $category->name }}</h3>
+            <p>Montant: {{ $category->amount }}</p>
+            <button>Button</button>
+        </div>
+        @endforeach
+    </div>
 </div>
+
 
 <!-- Section pour afficher les budgets -->
                     <div class="budget-section">
                         <h2>Budgets enregistrés:</h2>
                         
                                 @foreach($budgets as $budget)
-                                <p id="p1">le budget initial:
-                                <p id="budget-initial"></p>
-                                </p>
-                                <p id="p1">le reste:</p>
+                                <p id="p1">Le budget initial :</p>
+                                <span class="cadre1"> {{ $budget->budget_initial }}</span>
+                                
+                                <p id="p2">le reste:</p>
                                 <span class="cadre">{{ $budget->total_budget }}</span>
                                 @endforeach
                                 
@@ -145,6 +140,54 @@
     </div>
     @endsection
     <style>
+        .card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.card {
+    
+    background-color: #cfe2f3; /* Blue clair */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: calc(33.33% - 20px); /* Pour afficher 3 cartes par ligne */
+    padding: 30px; /* Augmentation de la taille de la carte */
+}
+
+.card h3 {
+    margin-top: 0;
+}
+
+.card button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.card button:hover {
+    background-color: #0056b3;
+}
+
+        /*--------------------------------------------------*/
+        .cadre1{
+        border: 2px solid black; /* Définir une bordure de 2 pixels solide noire */
+        padding: 5px; /* Ajouter un espace de remplissage autour du contenu */
+        display: inline-block; /* Permettre au cadre de s'ajuster à la taille du contenu */
+        font-size: 24px; /* Augmenter la taille de la police */
+        box-shadow: 3px 3px 5px rgb(5, 68, 104);
+        width: 100px;
+        padding-left: 40px;
+        margin-left:230px;
+        position:relative;
+        bottom:60px;
+
+        }
         .cadre {
         border: 2px solid black; /* Définir une bordure de 2 pixels solide noire */
         padding: 5px; /* Ajouter un espace de remplissage autour du contenu */
@@ -153,13 +196,20 @@
         box-shadow: 3px 3px 5px rgb(5, 68, 104);
         width: 100px;
         padding-left: 40px;
-        margin-left:100px;
+        margin-left:630px;
         position:relative;
-        bottom:50px;
+        bottom:195px;
         }
         #p1{
-            font-size: 24px;
+            font-size: 30px;
             text-shadow: 2px 2px 5px rgb(5, 68, 104) ;
+        }
+        #p2{
+            font-size: 30px;
+            text-shadow: 2px 2px 5px rgb(5, 68, 104) ;
+            margin-left:500px;
+            position:relative;
+            bottom:130px;
         }
         #btn-a{
             background: rgb(5, 68, 104);
