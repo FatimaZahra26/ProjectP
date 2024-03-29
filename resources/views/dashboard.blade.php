@@ -9,21 +9,21 @@
 
 
 
-
 <div class="sidebar">
     <div class="profile">
-           
-        <h3><i class="fas fa-user"></i><span> </span>{{ auth()->user()->name }}</h3>
+        {{-- <img src="{{ asset('http://127.0.0.1:8000/storage/' . $adminData->profile_picture) }}" alt="Profile Photo"
+            class="profile-img"> --}}
+        <h2 style="font-size:18px;font-weight:700">{{ auth()->user()->name }}</h2>
     </div>
     <ul>
-        <li><a href="#"><span class="icon"><i class="fas fa-home"></i></span>Home</a></li>
+        <li><a href="#Home" id="HomeLink"><span class="icon"><i class="fas fa-home"></i></span>Home</a></li>
         <li>
             <a href="#">
                 <span class="icon"><i class="fas fa-desktop"></i></span>
                 <span class="item">My Dashboard</span>
             </a>
         </li>
-        
+
         <li>
             <a href="#">
                 <span class="icon"><i class='fas fa-file-invoice-dollar'></i></span>
@@ -31,287 +31,623 @@
             </a>
         </li>
         <li>
-            <a href="#">
+            <a href="#Category" id="categoryLink">
                 <span class="icon"><i class="fa fa-list-alt"></i></span>
                 <span class="item">Categories</span>
             </a>
         </li>
-       <li> <a href="">
-            <span class="icon"><i class='fas fa-user-cog'></i></span>
-            <span class="item">Profile</span>
-        </a>
-    </li>
-    <li>
-        <a href="#">
-            <span class="icon"><i class="fas fa-cog"></i></span>
-            <span class="item">Settings</span>
-        </a>
-    </li>
-        <form method="POST" action="{{ route('save-budget') }}">
-                        @csrf
-                        <li>
-                      
-                        
-                        <x-responsive-nav-link :href="route('logout')"
-                                onclick="event.preventDefault();
+        <li> <a href="">
+                <span class="icon"><i class='fas fa-user-cog'></i></span>
+                <span class="item">Profile</span>
+            </a>
+        </li>
+
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <li>
+
+
+                <x-responsive-nav-link :href="route('logout')"
+                    onclick="event.preventDefault();
                                             this.closest('form').submit();">
-                             <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
-                             <span class="item">Logout</span>
-                        </x-responsive-nav-link>
-                    
-                </li>
-         </form>
+                    <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <span class="item">Logout</span>
+                </x-responsive-nav-link>
+
+            </li>
+        </form>
     </ul>
 </div>
 @section('content')
     <div class="container-fluid">
         <div class="row">
             <div class="home">
-            <h2>Welcome, {{ auth()->user()->name }}</h2>
-            <p style="color: #333">{{ $todayDate }}</p>
+                <p style="color: #333" style="font-weight: 600">{{ $todayDate }}</p>
+
+                <h2>Welcome, {{ auth()->user()->name }}</h2>
             </div>
-            
+
             <!-- Content -->
             <div class="balance-section">
-            <form name="cc"  method="POST" action="{{ route('save-budget') }}">
-                @csrf
-                <label for="category">Budget:</label><br>
-                <input type="text" id="category" name="category"><br><br>
-                <label for="duration">Durée:</label><br>
-                <select id="duration" name="duration">
-                    <option value="week">Une semaine</option>
-                    <option value="month">Un mois</option>
-                </select><br><br>
-                <button id="btn-a" type="submit">Envoyer</button>
-            </form>
-            <form method="POST" action="{{ route('save-categorie') }}">
-                @csrf
-                    <h1 id="h1">Categorie:</h1>
-                    <div class="input-group">
-                    <i class="fas fa-tasks"></i><input type="text" name="name" value="Transport">
-<input type="text" name="amount" id="lbl1" class="transport-input" placeholder="Entrer le budget">
-                    </div>
-                    <!-- <div class="input-group-ffd">
-                    <i id="food" class="fas fa-utensils"></i><label name="name">Food</label><input type="text" id="lbl2" name="amount" class="food-input" placeholder="Entrer le budget">
-                    </div>
-                    <div class="input-group-vetment">
-                    <i id="vetement" class="fas fa-tshirt"></i><label name="name">Vetement</label><input type="text" id="lbl3" name="amount" class="clothes-input" placeholder="Entrer le budget">
-                    
-                    </div> -->
-                    <button type="submit" class="save-btn">Enregistrer</button>
-                    
-            </form>
-                    <!-- Section pour afficher les catégories -->
-                    <div class="categories-section">
-    <h2>Catégories enregistrées:</h2>
-    <div class="card-container">
-        @foreach($categories as $category)
-        <div class="card">
-            <h3>{{ $category->name }}</h3>
-            <p>Montant: {{ $category->amount }}</p>
-            <button>Button</button>
-        </div>
-        @endforeach
-    </div>
-</div>
+                <!-- Section pour afficher les budgets -->
 
+                <div id="home">
+                    <ul class="cards">
+                        @foreach ($budgets as $budget)
+                            <li>
+                                <img src="{{ asset('assets/dol.jpg') }}" alt="" class="dol"
+                                    style="width: 50px;border-radius:50%">
+                                <span class="info">
+                                    <h3><span>$</span><span class="budget_card">{{ $budget->budget_initial }}</span></h3>
+                                    <p>Budget</p>
+                                </span>
+                            </li>
 
-<!-- Section pour afficher les budgets -->
-                    <div class="budget-section">
-                        <h2>Budgets enregistrés:</h2>
-                        
-                                @foreach($budgets as $budget)
-                                <p id="p1">Le budget initial :</p>
-                                <span class="cadre1"> {{ $budget->budget_initial }}</span>
-                                
-                                <p id="p2">le reste:</p>
-                                <span class="cadre">{{ $budget->total_budget }}</span>
+                            <li>
+                                <img src="{{ asset('assets/balance.jpg') }}" alt="" class="dol"
+                                    style="width: 50px;border-radius:50%">
+                                <span class="info">
+                                    <h3><span>$</span><span class="balance_card">{{ $budget->total_budget }}</span></h3>
+                                    <p>Remaining</p>
+                                </span>
+                            </li>
+                        @endforeach
+                    </ul>
+
+                    <div style="display: flex;margin-left:60%;">
+                        <button class="button-86" id="openForm">Add Budget</button>
+                        <button class="button-87" id="openCategory">Add category</button>
+                    </div>
+                    <div id="popupForm1" class="popup">
+
+                        <form name="cc" class="popup-content" method="POST" action="{{ route('save-budget') }}">
+                            @csrf
+                            <span class="close">&times;</span>
+                            <h1 id="h1">Budget:</h1>
+                            <label for="category">Amount:</label><br>
+                            <input type="number" id="category" name="category"><br><br>
+                            <label for="duration">Durée:</label><br>
+                            <select id="duration" name="duration">
+                                <option value="week">Une semaine</option>
+                                <option value="month">Un mois</option>
+                            </select><br><br>
+                            <button id="btn-a" type="submit" class="button-55">Envoyer</button>
+                        </form>
+                    </div>
+                    <div id="popupForm2" class="popup">
+                        <form method="POST" class="popup-content" action="{{ route('save-categorie') }}">
+                            @csrf
+                            <span class="close2">&times;</span>
+
+                            <h1 id="h1">Categorie:</h1>
+
+                            <label for="category">Categoty name:</label><br>
+                            <input type="text" name="name"><br><br>
+                            <label for="category">Categoty Amount:</label><br>
+                            <input type="number" name="amount" id="lbl1" class="transport-input"
+                                placeholder="Entrer le budget" style="margin-left:0px">
+
+                            <!-- <div class="input-group-ffd">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i id="food" class="fas fa-utensils"></i><label name="name">Food</label><input type="text" id="lbl2" name="amount" class="food-input" placeholder="Entrer le budget">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <div class="input-group-vetment">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i id="vetement" class="fas fa-tshirt"></i><label name="name">Vetement</label><input type="text" id="lbl3" name="amount" class="clothes-input" placeholder="Entrer le budget">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div> -->
+                            <button type="submit" class="button-55" style="margin-left:75%">Enregistrer</button>
+
+                        </form>
+                    </div>
+                </div>
+                <!-- Section pour afficher les catégories -->
+                <div class="categories-section" id="categories">
+                    <h2 style="color: #0056b3;margin-left:30%">Your Category List:</h2>
+                    <ul class="cards" style="display: flex; flex-wrap: wrap;margin:0 auto;">
+                        @foreach ($categories->chunk(2) as $pair)
+                            <ul class="pair" style="width: 40%;padding-left:0px;padding-right:50px;">
+                                @foreach ($pair as $category)
+                                    <li style="width: 100%;">
+                                        <img src="{{ asset('assets/cate.jpg') }}" alt="" class="dol"
+                                            style="width: 50px;border-radius:30%">
+                                        <span class="info">
+                                            <h3><span class="budget_card">Montant:<span>$</span>
+                                                    {{ $category->amount }}</span></h3>
+                                            <p>{{ $category->name }}</p>
+                                            <button class="button-52" role="button">Add Expenses</button>
+                                        </span>
+                                    </li>
                                 @endforeach
-                                
-                            
-                    </div>
-
-                    
+                            </ul>
+                        @endforeach
+                    </ul>
 
                 </div>
+
+
+
+
+
+
             </div>
-            
-        </div> 
+        </div>
+
     </div>
-    @endsection
-    <style>
-        .card-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
+    </div>
+@endsection
+<style>
+    .button-52 {
+        font-size: 14px;
+        font-weight: 200;
+        letter-spacing: 1px;
+        padding: 13px 20px 13px;
+        outline: 0;
+        border: 1px solid black;
+        cursor: pointer;
+        position: relative;
+        background-color: rgba(0, 0, 0, 0);
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        width: 80%;
+        margin-left: 40px;
+    }
 
-.card {
-    
-    background-color: #cfe2f3; /* Blue clair */
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: calc(33.33% - 20px); /* Pour afficher 3 cartes par ligne */
-    padding: 30px; /* Augmentation de la taille de la carte */
-}
+    .button-52:after {
+        content: "";
+        background-color: #ffe54c;
+        width: 100%;
+        z-index: -1;
+        position: absolute;
+        height: 100%;
+        top: 7px;
+        left: 7px;
+        transition: 0.2s;
+    }
 
-.card h3 {
-    margin-top: 0;
-}
+    .button-52:hover:after {
+        top: 0px;
+        left: 0px;
+    }
 
-.card button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
+    @media (min-width: 768px) {
+        .button-52 {
+            padding: 13px 50px 13px;
+        }
+    }
 
-.card button:hover {
-    background-color: #0056b3;
-}
+    .card-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
 
-        /*--------------------------------------------------*/
-        .cadre1{
-        border: 2px solid black; /* Définir une bordure de 2 pixels solide noire */
-        padding: 5px; /* Ajouter un espace de remplissage autour du contenu */
-        display: inline-block; /* Permettre au cadre de s'ajuster à la taille du contenu */
-        font-size: 24px; /* Augmenter la taille de la police */
+    /**/
+    .close,
+    .close2 {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close2:hover,
+    .close:focus,
+    .close2:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .popup-content {
+        background-color: #fefefe;
+        margin: 10% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 400px;
+    }
+
+    .popup {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+
+    .button-86,
+    .button-87 {
+        all: unset;
+        width: 100px;
+        height: 30px;
+        font-size: 16px;
+        background: transparent;
+        border: none;
+        position: relative;
+        color: #f0f0f0;
+        cursor: pointer;
+        z-index: 1;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        margin-right: 20px;
+    }
+
+    .button-86::after,
+    .button-87::after,
+    .button-86::before,
+    .button-87::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: -99999;
+        transition: all .4s;
+    }
+
+    .button-86::before {
+        transform: translate(0%, 0%);
+        width: 100%;
+        height: 100%;
+        background: #1a4491;
+        border-radius: 10px;
+    }
+
+    .button-87::before {
+        transform: translate(0%, 0%);
+        width: 100%;
+        height: 100%;
+        background: #f78504;
+        border-radius: 10px;
+    }
+
+    .button-86::after,
+    .button-87::after {
+        transform: translate(10px, 10px);
+        width: 35px;
+        height: 35px;
+        background: #ffffff15;
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border-radius: 50px;
+    }
+
+    .button-86:hover::before,
+    .button-87:hover::before {
+        transform: translate(5%, 20%);
+        width: 110%;
+        height: 110%;
+    }
+
+    .button-86:hover::after,
+    .button-87:hover::after {
+        border-radius: 10px;
+        transform: translate(0, 0);
+        width: 100%;
+        height: 100%;
+    }
+
+    .button-86:active::after,
+    .button-87:active::after {
+        transition: 0s;
+        transform: translate(0, 5%);
+    }
+
+    /**/
+    .card {
+
+        background-color: #cfe2f3;
+        /* Blue clair */
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: calc(33.33% - 20px);
+        /* Pour afficher 3 cartes par ligne */
+        padding: 30px;
+        /* Augmentation de la taille de la carte */
+    }
+
+    .card h3 {
+        margin-top: 0;
+    }
+
+    .card button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .card button:hover {
+        background-color: #0056b3;
+    }
+
+    /*--------------------------------------------------*/
+    .button-55 {
+        align-self: center;
+        background-color: #cacee3;
+        background-image: none;
+        background-position: 0 90%;
+        background-repeat: repeat no-repeat;
+        background-size: 4px 3px;
+        border-radius: 15px 225px 255px 15px 15px 255px 225px 15px;
+        border-style: solid;
+        border-width: 2px;
+        box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px;
+        box-sizing: border-box;
+        color: #41403e;
+        cursor: pointer;
+        display: inline-block;
+        font-family: Neucha, sans-serif;
+        font-size: 1rem;
+        line-height: 23px;
+        outline: none;
+        padding: .75rem;
+        text-decoration: none;
+        transition: all 235ms ease-in-out;
+        border-bottom-left-radius: 15px 255px;
+        border-bottom-right-radius: 225px 15px;
+        border-top-left-radius: 255px 15px;
+        border-top-right-radius: 15px 225px;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        margin-left: 80%;
+    }
+
+    .button-55:hover {
+        box-shadow: rgba(0, 0, 0, .3) 2px 8px 8px -5px;
+        transform: translate3d(0, 2px, 0);
+        background: #10558d;
+        l
+    }
+
+    .button-55:focus {
+        box-shadow: rgba(0, 0, 0, .3) 2px 8px 4px -6px;
+    }
+
+    .cadre1 {
+        border: 2px solid black;
+        /* Définir une bordure de 2 pixels solide noire */
+        padding: 5px;
+        /* Ajouter un espace de remplissage autour du contenu */
+        display: inline-block;
+        /* Permettre au cadre de s'ajuster à la taille du contenu */
+        font-size: 24px;
+        /* Augmenter la taille de la police */
         box-shadow: 3px 3px 5px rgb(5, 68, 104);
         width: 100px;
         padding-left: 40px;
-        margin-left:230px;
-        position:relative;
-        bottom:60px;
+        margin-left: 230px;
+        position: relative;
+        bottom: 60px;
 
-        }
-        .cadre {
-        border: 2px solid black; /* Définir une bordure de 2 pixels solide noire */
-        padding: 5px; /* Ajouter un espace de remplissage autour du contenu */
-        display: inline-block; /* Permettre au cadre de s'ajuster à la taille du contenu */
-        font-size: 24px; /* Augmenter la taille de la police */
+    }
+
+    .cadre {
+        border: 2px solid black;
+        /* Définir une bordure de 2 pixels solide noire */
+        padding: 5px;
+        /* Ajouter un espace de remplissage autour du contenu */
+        display: inline-block;
+        /* Permettre au cadre de s'ajuster à la taille du contenu */
+        font-size: 24px;
+        /* Augmenter la taille de la police */
         box-shadow: 3px 3px 5px rgb(5, 68, 104);
         width: 100px;
         padding-left: 40px;
-        margin-left:630px;
-        position:relative;
-        bottom:195px;
-        }
-        #p1{
-            font-size: 30px;
-            text-shadow: 2px 2px 5px rgb(5, 68, 104) ;
-        }
-        #p2{
-            font-size: 30px;
-            text-shadow: 2px 2px 5px rgb(5, 68, 104) ;
-            margin-left:500px;
-            position:relative;
-            bottom:130px;
-        }
-        #btn-a{
-            background: rgb(5, 68, 104);
-            color:white;
-            width:100px;
-        }
-        #h1{
-            margin-right:660px;
-        }
-        table, td, th {
+        margin-left: 630px;
+        position: relative;
+        bottom: 195px;
+    }
+
+    #p1 {
+        font-size: 30px;
+        text-shadow: 2px 2px 5px rgb(5, 68, 104);
+    }
+
+    #p2 {
+        font-size: 30px;
+        text-shadow: 2px 2px 5px rgb(5, 68, 104);
+        margin-left: 500px;
+        position: relative;
+        bottom: 130px;
+    }
+
+    #btn-a {}
+
+    #h1 {
+        margin-right: 660px;
+    }
+
+    /**/
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-gap: 1.5rem;
+        padding: 2rem;
+
+
+    }
+
+    .container .cards li {
+        padding: 1.8rem;
+        background-color: rgb(161, 181, 216);
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease-in;
+        margin-bottom: 50px;
+    }
+
+    .container .cards li:hover {
+        transform: translateY(-10px);
+    }
+
+    .container .cards li .bx {
+        width: 4.5rem;
+        height: 4.5rem;
+        border-radius: 10px;
+        font-size: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .container .cards li:nth-child(1) .bx {
+        background-color: var(--light-primary);
+        color: var(--primary);
+    }
+
+    .container .cards li:nth-child(2) .bx {
+        background-color: var(--light-warning);
+        color: var(--warning);
+    }
+
+    .container .cards li:nth-child(3) .bx {
+        background-color: var(--light-success);
+        color: var(--success);
+    }
+
+    .container .cards li .info h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .container .cards li .info p {
+        color: var(--dark);
+    }
+
+    #duration {
+        width: 65vh;
+    }
+
+    /**/
+    table,
+    td,
+    th {
         border: 1px solid;
-        }
+    }
 
-        table {
+    table {
         width: 100%;
         border-collapse: collapse;
-        }
-        .save-btn{
-            margin-top:30px;
-            background: rgb(5, 68, 104);
-            color:white;
-            width:100px;
-        }
-        
-#add-new-category{
-    margin-top:20px;
-}
-.add-category-btn {
-    background-color: #007bff;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 20px;
-    text-align: center;
-}
+    }
 
-.add-category-btn i {
-    margin-right: 5px;
-}
+    .save-btn {
+        margin-top: 30px;
+        background: rgb(5, 68, 104);
+        color: white;
+        width: 100px;
+    }
 
-       
-        #transport{
-            margin-right:20px;
-        }
-        #food{
-            margin-right:20px;
-        }
-        #vetement{
-            margin-right:20px;
-        }
-        #lbl3{
-            margin-top:20px;
-            margin-left:30px;
-            width:400px;}
-          
-        #lbl2{
-            margin-top:20px;
-            margin-left:75px;
-            width:400px;
-           
-        }
-        #lbl1{
-           margin-left:40px;
-            width:400px;
-           
-        }
-        .input-group {
+    #add-new-category {
+        margin-top: 20px;
+    }
+
+    .add-category-btn {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .add-category-btn i {
+        margin-right: 5px;
+    }
+
+
+    #transport {
+        margin-right: 20px;
+    }
+
+    #food {
+        margin-right: 20px;
+    }
+
+    #vetement {
+        margin-right: 20px;
+    }
+
+    #lbl3 {
+        margin-top: 20px;
+        margin-left: 30px;
+        width: 400px;
+    }
+
+    #lbl2 {
+        margin-top: 20px;
+        margin-left: 75px;
+        width: 400px;
+
+    }
+
+    #lbl1 {
+        margin-left: 40px;
+        width: 400px;
+
+    }
+
+    .input-group {
         display: flex;
         align-items: center;
     }
+
     .input-group i {
         margin-right: 10px;
     }
+
     .budget-input {
         padding: 8px;
         border: 1px solid #ccc;
         border-radius: 5px;
         width: 200px;
     }
-       input[type="text"], select {
-            width: 800px;
-            height: 30px;
-        }
-        #btn1 {
+
+    input[type="text"],
+    select {
+        width: 800px;
+        height: 30px;
+    }
+
+    #btn1 {
         background-color: white;
         color: black;
         border: 2px solid #04AA6D;
         margin-top: 40px;
-    
+
         margin-left: 700px;
-        }
-        #show-form-btn {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .tag-section {
+    }
+
+    #show-form-btn {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .tag-section {
         margin-top: 20px;
     }
 
@@ -350,203 +686,279 @@
         margin-top: 10px;
         color: #666;
     }
-        /* Style the button on hover */
-        #show-form-btn:hover {
-            background-color: #45a049;
-        }
-         .sidebar {
-            background: rgb(5, 68, 104);
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 225px;
-    height: 100%;
-    padding: 20px 0;
-    padding-left: 0px;
-    transition: all 0.5s ease;
-        }
-        #budget-form {
-            display: none;
-        }
-        .sidebar a {
-            
-            text-decoration: none;
-            font-size: 18px;
-            color: #f8f9fa;
-            display: block;
-            transition: 0.3s;
-        }
-        .sidebar a:hover {
-            background-color: #6c757d;
-        }
-        .sidebar .profile {
-            margin-bottom: 30px;
-    text-align: center;
-            color: #f8f9fa;
-        }
-        .sidebar .profile h3 {
-            margin-top: 0;
-        }
-        .sidebar ul{list-style: none;
+
+    /* Style the button on hover */
+    #show-form-btn:hover {
+        background-color: #45a049;
+    }
+
+    .sidebar {
+        background: rgb(5, 68, 104);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 225px;
+        height: 100%;
+        padding: 20px 0;
+        padding-left: 0px;
+        transition: all 0.5s ease;
+    }
+
+    #budget-form {
+        display: none;
+    }
+
+    .sidebar a {
+
+        text-decoration: none;
+        font-size: 18px;
+        color: #f8f9fa;
+        display: block;
+        transition: 0.3s;
+    }
+
+    .sidebar a:hover {
+        background-color: #6c757d;
+    }
+
+    .sidebar .profile {
+        margin-bottom: 30px;
+        text-align: center;
+        color: #f8f9fa;
+    }
+
+    .sidebar .profile h3 {
+        margin-top: 0;
+    }
+
+    .sidebar ul {
+        list-style: none;
         margin-top: 70px;
-    margin-left:0px;}
-        .sidebar ul li a{
-    display: block;
-    padding: 13px 0px;
-    border-bottom: 1px solid #10558d;
-    color: rgb(241, 237, 237);
-    font-size: 17px;
-    position: relative;
-}
+        padding-left: 5px;
+    }
 
- .sidebar ul li a .icon{
-    color: #dee4ec;
-    width: 30px;
-    display: inline-block;
-}
-.sidebar ul li a:hover,
- .sidebar ul li a.active{
-    color: #0c7db1;
+    .sidebar ul li a {
+        display: block;
+        padding: 13px 0px;
+        border-bottom: 1px solid #10558d;
+        color: rgb(241, 237, 237);
+        font-size: 17px;
+        position: relative;
+    }
 
-    background:white;
-    border-right: 2px solid rgb(5, 68, 104);
-}
+    .sidebar ul li a .icon {
+        color: #dee4ec;
+        width: 30px;
+        display: inline-block;
+    }
 
-.wrapper .sidebar ul li a:hover .icon,
-.wrapper .sidebar ul li a.active .icon{
-    color: #0c7db1;
-}
+    .sidebar ul li a:hover,
+    .sidebar ul li a.active {
+        color: #0c7db1;
 
-.sidebar ul li a:hover:before,
- .sidebar ul li a.active:before{
-    display: block;
-}
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f7f7f7;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+        background: white;
+        border-right: 2px solid rgb(5, 68, 104);
+    }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    .wrapper .sidebar ul li a:hover .icon,
+    .wrapper .sidebar ul li a.active .icon {
+        color: #0c7db1;
+    }
 
-        .budget-section, .categories-section, .balance-section {
-            margin-bottom: 30px;
-        }
+    .sidebar ul li a:hover:before,
+    .sidebar ul li a.active:before {
+        display: block;
+    }
 
-        .categories-list {
-            list-style: none;
-            padding: 0;
-        }
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f7f7f7;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-        .categories-list li {
-            margin-bottom: 10px;
-        }
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
 
-        .categories-list li a {
-            display: block;
-            padding: 10px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            text-decoration: none;
-            color: #333;
-            transition: background-color 0.3s;
-        }
-
-        .categories-list li a:hover {
-            background-color: #f0f0f0;
-        }
-
-        .logout-button {
-            background-color: #f44336;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .logout-button i {
-            margin-right: 5px;
-        }
-
-        .expense-form {
-            margin-top: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .btn {
-            background-color: #4caf50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            background-color: #45a049;
-        }
-
-        .balance-details {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .balance-item {
-            color: #333;
-        }
-
-        .balance-value {
-            font-weight: bold;
-            color: #4caf50;
-        }
-        
-    </style>
-
-<script> 
-document.getElementById("btn-a").addEventListener("click", function(event) { 
-    event.preventDefault(); 
-    var budget = parseFloat(document.getElementById("category").value); 
-    var duration = document.getElementById("duration").value; 
-    // Afficher le budget initial dans l'élément HTML approprié 
-    document.getElementById("budget-initial").textContent = "Le budget initial : " + budget; });
- </script>
+    .budget-section {
+        background: #666;
+        height: 80px;
+        display: flex;
+    }
 
 
+    .categories-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .categories-list li {
+        margin-bottom: 10px;
+    }
+
+    .categories-list li a {
+        display: block;
+        padding: 10px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-decoration: none;
+        color: #333;
+        transition: background-color 0.3s;
+    }
+
+    .categories-list li a:hover {
+        background-color: #f0f0f0;
+    }
+
+    .logout-button {
+        background-color: #f44336;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .logout-button i {
+        margin-right: 5px;
+    }
+
+    .expense-form {
+        margin-top: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .btn {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background-color: #45a049;
+    }
+
+    .balance-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .balance-item {
+        color: #333;
+    }
+
+    .balance-value {
+        font-weight: bold;
+        color: #4caf50;
+    }
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery -->
+<script src="script.js"></script> <!-- Your custom script -->
+<script>
+    /*document.getElementById("btn-a").addEventListener("click", function(event) {
+        event.preventDefault();
+        var budget = parseFloat(document.getElementById("category").value);
+        var duration = document.getElementById("duration").value;
+        // Afficher le budget initial dans l'élément HTML approprié 
+        document.getElementById("budget-initial").textContent = "Le budget initial : " + budget;
+    });*/
+    /**/
+    $(document).ready(function() {
+        // Cette fonction sera appelée lorsque l'utilisateur clique sur le lien "Home" dans la barre latérale
+        $("#categoryLink").click(function() {
+            // Masquer les autres sections
+            $('#home').hide();
+            // Afficher la section "Home"
+            $('#categories').show();
 
 
+        });
+        $("#HomeLink").click(function() {
+            // Masquer les autres sections
+            $('#categories').hide();
+            // Afficher la section "Home"
+            $('#home').show();
 
 
-
-        
-
+        });
 
 
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Masquer les autres sections sauf la section "Home"
+        document.getElementById('categories').style.display = 'none';
 
+        // Afficher la section "Home"
+        document.getElementById('home').style.display = 'block';
+    });
 
-   
+    /**/
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('openForm').addEventListener('click', function() {
+            document.getElementById('popupForm1').style.display = 'block';
+        });
 
+        document.querySelector('.close').addEventListener('click', function() {
+            document.getElementById('popupForm1').style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target == document.getElementById('popupForm1')) {
+                document.getElementById('popupForm2').style.display = 'none';
+            }
+        });
+
+        // Prevent the form from being submitted
+        document.getElementById('myForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('openCategory').addEventListener('click', function() {
+            document.getElementById('popupForm2').style.display = 'block';
+        });
+
+        document.querySelector('.close2').addEventListener('click', function() {
+            document.getElementById('popupForm2').style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target == document.getElementById('popupForm2')) {
+                document.getElementById('popupForm2').style.display = 'none';
+            }
+        });
+
+        // Prevent the form from being submitted
+        document.getElementById('myForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+        });
+    });
+</script>
