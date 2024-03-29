@@ -29,4 +29,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/save-categorie', [HomeController::class, 'savecategorie'])->name('save-categorie');
        
 });
+// Routes pour la gestion du profil de l'utilisateur connecté
+Route::middleware(['auth'])->group(function () {
+    // Route pour afficher le formulaire de profil
+    Route::get('/profile', [HomeController::class, 'profile'])->name('profile');
+    // Route pour mettre à jour le profil
+    Route::post('/profile/update', [HomeController::class, 'updateProfile'])->name('profile.update');
+});
 require __DIR__.'/auth.php';

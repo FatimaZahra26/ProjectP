@@ -26,11 +26,14 @@ class HomeController extends Controller
         if (Auth::check()) {
             $usertype = Auth::user()->usertype;
             if ($usertype == 'user') {
+                
                 $user = Auth::user();
+                $id=$user->id;
                 $budget = Budget::all(); 
                 $expenses = $user->expense;
                 $todayDate = Carbon::now()->format('F Y');
-                return view('dashboard', compact('budget', 'expenses', 'categories', 'header', 'todayDate', 'budgets')); // Ajoutez 'budgets' ici
+                $adminData=User::find($id);
+                return view('dashboard', compact('budget', 'expenses', 'categories', 'header', 'todayDate', 'budgets','adminData')); // Ajoutez 'budgets' ici
             } elseif ($usertype == 'admin') {
                 $todayDate = Carbon::now()->format('F Y');                $users = User::where('usertype', 'user')->get();
                 $id=Auth::user()->id;
@@ -209,10 +212,40 @@ public function savecategorie(Request $request)
         return redirect()->back()->with('error', 'Une erreur s\'est produite lors de l\'enregistrement de la catégorie');
     }
 }
+    public function updateProfile(Request $request) 
+    {   
+        //dd($request->all());
+        // Get the authenticated user's ID
+        $id = Auth::user()->id;
+        
+        // Find the user by ID
+        $user = User::findOrFail($id);
+
+        // Handle photo upload if provided
+        if ($request->hasFile('photo')) {
+            // Store the uploaded file in the 'photos' directory under the 'public' disk
+            $profileImagePath = $request->file('photo')->store('profile_images', 'public');
+            
+            // Update the user's profile picture path
+            $user->profile_picture = $profileImagePath ;
+        }
+    
+        // Update other user details
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        
+        
+        // Save the updated user record
+        $user->save();
+    
+        // Redirect back with success message
+        return redirect()->back()->with('success', 'Profile updated successfully');
+    }
+    
+}
 
 
 
 
    
     
-}

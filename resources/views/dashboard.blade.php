@@ -11,8 +11,8 @@
 
 <div class="sidebar">
     <div class="profile">
-        {{-- <img src="{{ asset('http://127.0.0.1:8000/storage/' . $adminData->profile_picture) }}" alt="Profile Photo"
-            class="profile-img"> --}}
+      <img src="{{ asset('http://127.0.0.1:8000/storage/' . $adminData->profile_picture) }}" alt="Profile Photo"
+            class="profile-img">
         <h2 style="font-size:18px;font-weight:700">{{ auth()->user()->name }}</h2>
     </div>
     <ul>
@@ -36,12 +36,12 @@
                 <span class="item">Categories</span>
             </a>
         </li>
-        <li> <a href="">
+        <li>
+            <a href="#Profile" id="profile-link">
                 <span class="icon"><i class='fas fa-user-cog'></i></span>
                 <span class="item">Profile</span>
             </a>
         </li>
-
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <li>
@@ -68,7 +68,10 @@
             </div>
 
             <!-- Content -->
+            
+
             <div class="balance-section">
+                
                 <!-- Section pour afficher les budgets -->
 
                 <div id="home">
@@ -107,7 +110,7 @@
                             <label for="category">Amount:</label><br>
                             <input type="number" id="category" name="category"><br><br>
                             <label for="duration">Durée:</label><br>
-                            <select id="duration" name="duration">
+                            <select id="duration" name="duration" style="width:400px">
                                 <option value="week">Une semaine</option>
                                 <option value="month">Un mois</option>
                             </select><br><br>
@@ -163,7 +166,36 @@
 
                 </div>
 
-
+<!-- profile -->
+<div class="profile-container" id="profile-section" style="display: none;">
+                        <div class="profile-info">
+                            <img src="{{ asset('storage/' . $adminData->profile_picture) }}" alt="Profile Photo" class="profile-img">
+                            <form action="{{ route('profile.update') }}" method="post" enctype="multipart/form-data">
+                                @csrf
+                                <div class="form-group">
+                                    <label for="profile_image">Choisir une nouvelle image de profil :</label>
+                                    <input type="file" id="profile_image" name="photo" value="{{ $adminData->profile_image }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="name">Nom:</label>
+                                    <input type="text" id="name" name="name" value="{{ $adminData->name }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email:</label>
+                                    <input type="email" id="email" name="email" value="{{ $adminData->email }}">
+                                </div>
+                                <div class="form-group" >
+                                    <input type="submit"  value="Enregistrer les modifications">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Popup d'enregistrement -->
+<div class="popup" id="save-popup">
+  <div class="popup-content">
+    <span class="close">&times;</span>
+    <p>Les modifications ont été enregistrées avec succès!</p>
+</div>
 
 
 
@@ -175,6 +207,110 @@
     </div>
 @endsection
 <style>
+     /* Styles pour le popup */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
+    z-index: 9999; /* Assure que le popup apparaît au-dessus de tout */
+}
+
+.popup-content {
+    background-color: #fff;
+    width: 300px;
+    padding: 20px;
+    border-radius: 5px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+    /*profile css*/
+    .profile-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    background-color: #04317A; /* Couleur de fond légèrement plus claire */
+}
+
+.profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: block;
+    border: 4px solid #fff; /* Ajout d'une bordure blanche */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Ombre légère pour l'image */
+}
+
+.profile-info {
+    text-align: center;
+    color: white; /* Couleur du texte */
+}
+
+.profile-info p {
+    margin-bottom: 15px; /* Espacement légèrement augmenté */
+    font-size: 16px; /* Taille de police légèrement augmentée */
+}
+
+.form-group {
+    margin-bottom: 20px; /* Espacement plus important entre les groupes de formulaire */
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px; /* Espacement entre les libellés et les champs de formulaire */
+    font-weight: bold; /* Texte en gras */
+    color: white; /* Couleur bleue pour les libellés */
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"] {
+    width: 100%;
+    padding: 12px; /* Rembourrage légèrement augmenté */
+    border-radius: 5px;
+    border: 1px solid #ced4da; /* Bordure légèrement plus claire */
+    transition: border-color 0.3s; /* Transition en douceur pour le changement de couleur de la bordure */
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus {
+    border-color: #007bff; /* Couleur de la bordure au focus */
+    outline: none; /* Supprime la bordure de mise au point par défaut */
+}
+
+.form-group input[type="submit"] {
+    background-color: #007bff;
+    border: none;
+    padding: 12px 24px; /* Rembourrage légèrement augmenté */
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px; /* Taille de police légèrement augmentée */
+    transition: background-color 0.3s; /* Transition en douceur pour le changement de couleur de fond */
+    color: blue;
+    cursor: pointer;
+}
+
+.form-group input[type="submit"]:hover {
+    background-color: white; /* Couleur de fond au survol */
+}
+
+/*end*/
     .button-52 {
         font-size: 14px;
         font-weight: 200;
@@ -411,7 +547,7 @@
         box-shadow: rgba(0, 0, 0, .3) 2px 8px 8px -5px;
         transform: translate3d(0, 2px, 0);
         background: #10558d;
-        l
+        
     }
 
     .button-55:focus {
@@ -894,6 +1030,7 @@
         $("#categoryLink").click(function() {
             // Masquer les autres sections
             $('#home').hide();
+            $('#profile-section').hide();
             // Afficher la section "Home"
             $('#categories').show();
 
@@ -902,12 +1039,22 @@
         $("#HomeLink").click(function() {
             // Masquer les autres sections
             $('#categories').hide();
+            $('#profile-section').hide();
             // Afficher la section "Home"
             $('#home').show();
 
 
         });
+        $("#profile-link").click(function() {
+            // Masquer les autres sections
+            $('#categories').hide();
+            // Afficher la section "Home"
+            $('#home').hide();
+            $('#profile-section').show();
 
+
+
+        });
 
     });
     document.addEventListener('DOMContentLoaded', function() {
@@ -962,3 +1109,32 @@
         });
     });
 </script>
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Gérer le clic sur le lien "Profile"
+        $('#profile-link').click(function(event) {
+            event.preventDefault(); // Empêche le lien de suivre le lien par défaut
+            $('#profile-section').toggle(); // Affiche ou masque la section profil
+        });
+       
+
+        $('.form-group input[type="submit"').click(function(event) {
+        
+        $('#save-popup').fadeIn(); // Affiche le popup d'enregistrement
+    });
+
+    // Gérer le clic sur le bouton de fermeture du popup
+    $('.close').click(function() {
+        $('#save-popup').fadeOut(); // Masque le popup d'enregistrement
+        $('#profile-section').toggle(); // Affiche ou masque la section profil
+    });
+    /*Gérer le clic sur le bouton "OK"
+    $('#ok-button').click(function() {
+        $('#save-popup').fadeOut(); // Masque le popup d'enregistrement
+        $('#profile-section').toggle(); // Affiche ou masque la section profil
+    });*/
+    
+    });
+    
+</script> -->
