@@ -14,9 +14,9 @@ class Expense extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function category()
+    public function tag()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Tag::class, 'tag_id');
     }
 
 }

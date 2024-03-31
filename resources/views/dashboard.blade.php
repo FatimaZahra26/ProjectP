@@ -6,26 +6,28 @@
 
 @endphp
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
 
 
 <div class="sidebar">
     <div class="profile">
-      <img src="{{ asset('http://127.0.0.1:8000/storage/' . $adminData->profile_picture) }}" alt="Profile Photo"
+        <img src="{{ asset('http://127.0.0.1:8000/storage/' . $adminData->profile_picture) }}" alt="Profile Photo"
             class="profile-img">
         <h2 style="font-size:18px;font-weight:700">{{ auth()->user()->name }}</h2>
     </div>
     <ul>
         <li><a href="#Home" id="HomeLink"><span class="icon"><i class="fas fa-home"></i></span>Home</a></li>
         <li>
-            <a href="#">
+            <a href="#Dashboard" id="DashboardLink">
                 <span class="icon"><i class="fas fa-desktop"></i></span>
                 <span class="item">My Dashboard</span>
             </a>
         </li>
 
         <li>
-            <a href="#">
+            <a href="#Expenses" id="ExpenseLink">
                 <span class="icon"><i class='fas fa-file-invoice-dollar'></i></span>
                 <span class="item">Expences</span>
             </a>
@@ -68,13 +70,15 @@
             </div>
 
             <!-- Content -->
-            
+
 
             <div class="balance-section">
-                
+
                 <!-- Section pour afficher les budgets -->
 
                 <div id="home">
+
+
                     <ul class="cards">
                         @foreach ($budgets as $budget)
                             <li>
@@ -103,22 +107,24 @@
                     </div>
                     <div id="popupForm1" class="popup">
 
-                        <form name="cc" class="popup-content" method="POST" action="{{ route('save-budget') }}">
+                        <form name="cc" class="popup-content" method="POST" action="{{ route('save-budget') }}"
+                            style="margin:0 auto;">
                             @csrf
                             <span class="close">&times;</span>
                             <h1 id="h1">Budget:</h1>
-                            <label for="category">Amount:</label><br>
-                            <input type="number" id="category" name="category"><br><br>
-                            <label for="duration">Durée:</label><br>
+                            <label for="category">Budget Amount:</label><br>
+                            <input type="number" id="category" name="category" min="0"><br><br>
+                            <label for="duration">duration:</label><br>
                             <select id="duration" name="duration" style="width:400px">
-                                <option value="week">Une semaine</option>
-                                <option value="month">Un mois</option>
+                                <option value="week">Weekly</option>
+                                <option value="month">Montly</option>
                             </select><br><br>
-                            <button id="btn-a" type="submit" class="button-55">Envoyer</button>
+                            <button id="btn-a" type="submit" class="button-55">Send</button>
                         </form>
                     </div>
                     <div id="popupForm2" class="popup">
-                        <form method="POST" class="popup-content" action="{{ route('save-categorie') }}">
+                        <form method="POST" class="popup-content" action="{{ route('save-categorie') }}"
+                            style="margin:0 auto;">
                             @csrf
                             <span class="close2">&times;</span>
 
@@ -128,16 +134,16 @@
                             <input type="text" name="name"><br><br>
                             <label for="category">Categoty Amount:</label><br>
                             <input type="number" name="amount" id="lbl1" class="transport-input"
-                                placeholder="Entrer le budget" style="margin-left:0px">
+                                placeholder="Entrer le budget" style="margin-left:0px" min="0">
 
                             <!-- <div class="input-group-ffd">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i id="food" class="fas fa-utensils"></i><label name="name">Food</label><input type="text" id="lbl2" name="amount" class="food-input" placeholder="Entrer le budget">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <div class="input-group-vetment">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i id="vetement" class="fas fa-tshirt"></i><label name="name">Vetement</label><input type="text" id="lbl3" name="amount" class="clothes-input" placeholder="Entrer le budget">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div> -->
-                            <button type="submit" class="button-55" style="margin-left:75%">Enregistrer</button>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i id="food" class="fas fa-utensils"></i><label name="name">Food</label><input type="text" id="lbl2" name="amount" class="food-input" placeholder="Entrer le budget">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <div class="input-group-vetment">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i id="vetement" class="fas fa-tshirt"></i><label name="name">Vetement</label><input type="text" id="lbl3" name="amount" class="clothes-input" placeholder="Entrer le budget">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div> -->
+                            <button type="submit" class="button-55" style="margin-left:75%">Save</button>
 
                         </form>
                     </div>
@@ -149,168 +155,306 @@
                         @foreach ($categories->chunk(2) as $pair)
                             <ul class="pair" style="width: 40%;padding-left:0px;padding-right:50px;">
                                 @foreach ($pair as $category)
-                                    <li style="width: 100%;">
-                                        <img src="{{ asset('assets/cate.jpg') }}" alt="" class="dol"
-                                            style="width: 50px;border-radius:30%">
-                                        <span class="info">
-                                            <h3><span class="budget_card">Montant:<span>$</span>
-                                                    {{ $category->amount }}</span></h3>
-                                            <p>{{ $category->name }}</p>
-                                            <button class="button-52" role="button">Add Expenses</button>
-                                        </span>
-                                    </li>
+                                    <div class="flou">
+                                        <li style="width: 100%;">
+                                            <img src="{{ asset('assets/cate.jpg') }}" alt="" class="dol"
+                                                style="width: 50px;border-radius:30%">
+                                            <span class="info">
+                                                <h3><span
+                                                        class="budget_card">Amount:<span>$</span>{{ $category->amount }}</span>
+                                                </h3>
+                                                <p>{{ $category->name }}</p>
+                                                <button class="button-52 add-expense-button"
+                                                    data-category="{{ $category->id }}" role="button">Add
+                                                    Expenses</button>
+                                            </span>
+                                        </li>
+                                    </div>
+                                    <!-- Ajout du formulaire d'ajout de dépenses pour cette catégorie -->
+                                    <div id="expenseForm{{ $category->id }}" class="expenseForm" style="display: none;">
+                                        <form action="{{ route('expenses.store') }}" method="POST"
+                                            class="popup-content" style="">
+                                            @csrf
+                                            <h1>Add Expense for {{ $category->name }}</h1>
+                                            <input type="hidden" name="tag_id" value="{{ $category->id }}">
+                                            <label for="description">Description:</label><br>
+                                            <input type="text" id="description" name="description"><br><br>
+                                            <label for="amount">Amount:</label><br>
+                                            <input type="number" id="amount" name="amount" min="0"><br><br>
+                                            <button type="submit">Add Expense</button>
+                                        </form>
+                                    </div>
+                                    <!-- Liste des dépenses pour cette catégorie -->
+                                    <ul class="expenses-list" id="expensesList{{ $category->id }}">
+                                        @if ($category->expenses)
+                                            @foreach ($category->expenses as $expense)
+                                                <li>{{ $expense->description }}: ${{ $expense->amount }}</li>
+                                            @endforeach
+                                        @endif
+                                    </ul>
                                 @endforeach
                             </ul>
                         @endforeach
                     </ul>
+                </div>
+
+                <!-- profile -->
+                <div class="profile-container" id="profile-section" style="display: none;">
+                    <div class="profile-info">
+                        <img src="{{ asset('storage/' . $adminData->profile_picture) }}" alt="Profile Photo"
+                            class="profile-img">
+                        <form action="{{ route('profile.update') }}" method="post" enctype="multipart/form-data">
+                            @csrf
+                            <div class="form-group">
+                                <label for="profile_image">choose a new profile picture:</label>
+                                <input type="file" id="profile_image" name="photo"
+                                    value="{{ $adminData->profile_image }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Name:</label>
+                                <input type="text" id="name" name="name" value="{{ $adminData->name }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input type="email" id="email" name="email" value="{{ $adminData->email }}">
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Save changes">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div id="ExpenseList">
+                    @foreach ($categories as $category)
+                        <div class="card" style="background: #f8c263">
+                            <div class="card-header">{{ $category->name }}</div>
+                            <div class="card-body">
+                                @foreach ($expensesByCategory[$category->id] as $expense)
+                                    <div class="expense-item">
+                                        <div class="description">{{ $expense->description }}</div>
+                                        <div class="amount">${{ $expense->amount }}</div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+
+                <div style="width: 400px; height: 400px;">
+                    <canvas id="budgetPieChart"></canvas>
 
                 </div>
 
-<!-- profile -->
-<div class="profile-container" id="profile-section" style="display: none;">
-                        <div class="profile-info">
-                            <img src="{{ asset('storage/' . $adminData->profile_picture) }}" alt="Profile Photo" class="profile-img">
-                            <form action="{{ route('profile.update') }}" method="post" enctype="multipart/form-data">
-                                @csrf
-                                <div class="form-group">
-                                    <label for="profile_image">Choisir une nouvelle image de profil :</label>
-                                    <input type="file" id="profile_image" name="photo" value="{{ $adminData->profile_image }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="name">Nom:</label>
-                                    <input type="text" id="name" name="name" value="{{ $adminData->name }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">Email:</label>
-                                    <input type="email" id="email" name="email" value="{{ $adminData->email }}">
-                                </div>
-                                <div class="form-group" >
-                                    <input type="submit"  value="Enregistrer les modifications">
-                                </div>
-                            </form>
-                        </div>
+                <!-- Popup d'enregistrement -->
+                {{-- <div class="popup" id="save-popup">
+                    <div class="popup-content">
+                        <span class="close">&times;</span>
+                        <p>Les modifications ont été enregistrées avec succès!</p>
                     </div>
-                    <!-- Popup d'enregistrement -->
-<div class="popup" id="save-popup">
-  <div class="popup-content">
-    <span class="close">&times;</span>
-    <p>Les modifications ont été enregistrées avec succès!</p>
-</div>
 
 
+
+
+                </div> --}}
 
 
             </div>
-        </div>
 
-    </div>
+        </div>
     </div>
 @endsection
 <style>
-     /* Styles pour le popup */
-.popup {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
-    z-index: 9999; /* Assure que le popup apparaît au-dessus de tout */
-}
+    /**/
+    /* Appliquer un flou aux éléments autres que le formulaire d'ajout de dépenses */
 
-.popup-content {
-    background-color: #fff;
-    width: 300px;
-    padding: 20px;
-    border-radius: 5px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
 
-.close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-}
+    /* Positionner le formulaire d'ajout de dépenses au premier plan */
+    .expenseForm {
+        position: absolute;
+        width: 500px;
+
+        border-radius: 5px;
+        position: absolute;
+        top: 70%;
+        left: 30%;
+        background-color: white;
+
+        /* Modifier en fonction de votre conception */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        /* Modifier en fonction de votre conception */
+    }
+
+
+
+    /**/
+    #ExpenseList {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+
+
+
+    .card-header {
+        padding: 10px;
+        font-weight: bold;
+        background-color: #f0f0f0;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+    }
+
+    .card-body {
+        padding: 10px;
+        background: transparent;
+    }
+
+    .expense-item {
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+
+    }
+
+    .expense-item .description {
+        font-weight: bold;
+    }
+
+    .expense-item .amount {
+        color: #555;
+        font-size: 0.9em;
+        font-weight: 700
+    }
+
+    /**/
+    /* Styles pour le popup */
+    .popup {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        /* Fond semi-transparent */
+        z-index: 9999;
+        /* Assure que le popup apparaît au-dessus de tout */
+        margin-bottom: 500px;
+    }
+
+    .popup-content {
+        background-color: #fff;
+        width: 300px;
+        padding: 20px;
+        border-radius: 5px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+    }
 
     /*profile css*/
     .profile-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    background-color: #04317A; /* Couleur de fond légèrement plus claire */
-}
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        background-color: #04317A;
+        /* Couleur de fond légèrement plus claire */
+    }
 
-.profile-img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    margin: 0 auto 20px;
-    display: block;
-    border: 4px solid #fff; /* Ajout d'une bordure blanche */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Ombre légère pour l'image */
-}
+    .profile-img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        display: block;
+        border: 4px solid #fff;
+        /* Ajout d'une bordure blanche */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        /* Ombre légère pour l'image */
+    }
 
-.profile-info {
-    text-align: center;
-    color: white; /* Couleur du texte */
-}
+    .profile-info {
+        text-align: center;
+        color: white;
+        /* Couleur du texte */
+    }
 
-.profile-info p {
-    margin-bottom: 15px; /* Espacement légèrement augmenté */
-    font-size: 16px; /* Taille de police légèrement augmentée */
-}
+    .profile-info p {
+        margin-bottom: 15px;
+        /* Espacement légèrement augmenté */
+        font-size: 16px;
+        /* Taille de police légèrement augmentée */
+    }
 
-.form-group {
-    margin-bottom: 20px; /* Espacement plus important entre les groupes de formulaire */
-}
+    .form-group {
+        margin-bottom: 20px;
+        /* Espacement plus important entre les groupes de formulaire */
+    }
 
-.form-group label {
-    display: block;
-    margin-bottom: 10px; /* Espacement entre les libellés et les champs de formulaire */
-    font-weight: bold; /* Texte en gras */
-    color: white; /* Couleur bleue pour les libellés */
-}
+    .form-group label {
+        display: block;
+        margin-bottom: 10px;
+        /* Espacement entre les libellés et les champs de formulaire */
+        font-weight: bold;
+        /* Texte en gras */
+        color: white;
+        /* Couleur bleue pour les libellés */
+    }
 
-.form-group input[type="text"],
-.form-group input[type="email"] {
-    width: 100%;
-    padding: 12px; /* Rembourrage légèrement augmenté */
-    border-radius: 5px;
-    border: 1px solid #ced4da; /* Bordure légèrement plus claire */
-    transition: border-color 0.3s; /* Transition en douceur pour le changement de couleur de la bordure */
-}
+    .form-group input[type="text"],
+    .form-group input[type="email"] {
+        width: 100%;
+        padding: 12px;
+        /* Rembourrage légèrement augmenté */
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        /* Bordure légèrement plus claire */
+        transition: border-color 0.3s;
+        /* Transition en douceur pour le changement de couleur de la bordure */
+    }
 
-.form-group input[type="text"]:focus,
-.form-group input[type="email"]:focus {
-    border-color: #007bff; /* Couleur de la bordure au focus */
-    outline: none; /* Supprime la bordure de mise au point par défaut */
-}
+    .form-group input[type="text"]:focus,
+    .form-group input[type="email"]:focus {
+        border-color: #007bff;
+        /* Couleur de la bordure au focus */
+        outline: none;
+        /* Supprime la bordure de mise au point par défaut */
+    }
 
-.form-group input[type="submit"] {
-    background-color: #007bff;
-    border: none;
-    padding: 12px 24px; /* Rembourrage légèrement augmenté */
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px; /* Taille de police légèrement augmentée */
-    transition: background-color 0.3s; /* Transition en douceur pour le changement de couleur de fond */
-    color: blue;
-    cursor: pointer;
-}
+    .form-group input[type="submit"] {
+        background-color: #007bff;
+        border: none;
+        padding: 12px 24px;
+        /* Rembourrage légèrement augmenté */
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 16px;
+        /* Taille de police légèrement augmentée */
+        transition: background-color 0.3s;
+        /* Transition en douceur pour le changement de couleur de fond */
+        color: blue;
+        cursor: pointer;
+    }
 
-.form-group input[type="submit"]:hover {
-    background-color: white; /* Couleur de fond au survol */
-}
+    .form-group input[type="submit"]:hover {
+        background-color: white;
+        /* Couleur de fond au survol */
+    }
 
-/*end*/
+    /*end*/
     .button-52 {
         font-size: 14px;
         font-weight: 200;
@@ -547,7 +691,7 @@
         box-shadow: rgba(0, 0, 0, .3) 2px 8px 8px -5px;
         transform: translate3d(0, 2px, 0);
         background: #10558d;
-        
+
     }
 
     .button-55:focus {
@@ -1014,8 +1158,65 @@
         color: #4caf50;
     }
 </style>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery -->
-<script src="script.js"></script> <!-- Your custom script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+
+<script>
+    // Récupérez les données de la vue Laravel
+    document.addEventListener('DOMContentLoaded', function() {
+        // Votre script JavaScript pour initialiser le graphique ici
+        var categories = {!! json_encode($categories) !!};
+
+        // Initialisez les tableaux pour les labels et les données
+        var labels = [];
+        var data = [];
+
+        // Remplissez les tableaux avec les données récupérées
+        categories.forEach(function(category) {
+            labels.push(category.name);
+            data.push(category.amount);
+        });
+
+        // Obtenez le contexte du canvas
+        var ctx = document.getElementById('budgetPieChart').getContext('2d');
+
+        // Créez le pie chart
+        var budgetPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 159, 64, 0.7)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    datalabels: {
+                        display: true,
+                        color: '#fff',
+                        formatter: (value, ctx) => {
+                            let sum = ctx.dataset._meta[0].total;
+                            let percentage = (value * 100 / sum).toFixed(2) + "%";
+                            return percentage;
+                        }
+                    }
+                }
+            }
+        });
+
+    });
+</script>
 <script>
     /*document.getElementById("btn-a").addEventListener("click", function(event) {
         event.preventDefault();
@@ -1033,6 +1234,19 @@
             $('#profile-section').hide();
             // Afficher la section "Home"
             $('#categories').show();
+            $('#budgetPieChart').hide();
+            $('#ExpenseList').hide();
+
+
+        });
+        $("#DashboardLink").click(function() {
+            // Masquer les autres sections
+            $('#home').hide();
+            $('#profile-section').hide();
+            // Afficher la section "Home"
+            $('#categories').hide();
+            $('#budgetPieChart').show();
+            $('#ExpenseList').hide();
 
 
         });
@@ -1042,6 +1256,8 @@
             $('#profile-section').hide();
             // Afficher la section "Home"
             $('#home').show();
+            $('#budgetPieChart').hide();
+            $('#ExpenseList').hide();
 
 
         });
@@ -1050,7 +1266,20 @@
             $('#categories').hide();
             // Afficher la section "Home"
             $('#home').hide();
+            $('#budgetPieChart').hide();
             $('#profile-section').show();
+            $('#ExpenseList').hide();
+
+
+        });
+        $("#ExpenseLink").click(function() {
+            // Masquer les autres sections
+            $('#categories').hide();
+            // Afficher la section "Home"
+            $('#home').hide();
+            $('#budgetPieChart').hide();
+            $('#profile-section').hide();
+            $('#ExpenseList').show();
 
 
 
@@ -1060,9 +1289,10 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Masquer les autres sections sauf la section "Home"
         document.getElementById('categories').style.display = 'none';
-
+        document.getElementById('budgetPieChart').style.display = 'none';
         // Afficher la section "Home"
         document.getElementById('home').style.display = 'block';
+        document.getElementById('ExpenseList').style.display = 'none';
     });
 
     /**/
@@ -1109,6 +1339,117 @@
         });
     });
 </script>
+
+
+
+{{-- <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fonction pour afficher ou masquer le formulaire d'ajout de dépenses lorsqu'un utilisateur clique sur le bouton "Add Expenses"
+        document.querySelectorAll('.add-expense-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const categoryId = button.getAttribute('data-category');
+                const expenseForm = document.getElementById(`expenseForm${categoryId}`);
+                if (expenseForm) {
+                    // Si le formulaire est déjà affiché, le masquer ; sinon, l'afficher
+                    if (expenseForm.style.display === 'block') {
+                        expenseForm.style.display = 'none';
+                    } else {
+                        expenseForm.style.display = 'block';
+                    }
+                }
+            });
+        });
+    });
+</script> --}}
+{{-- <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const expenseButtons = document.querySelectorAll('.add-expense-button');
+        const expenseForms = document.querySelectorAll('.expenseForm');
+        const categoriesSection = document.getElementById('categories');
+
+        // Function to show expense form with higher z-index and blur background
+        function showExpenseForm(categoryId) {
+            const expenseForm = document.getElementById(`expenseForm${categoryId}`);
+            expenseForm.style.display = 'block';
+            expenseForm.style.zIndex = '1';
+            categoriesSection.classList.add('blur-background');
+        }
+
+        // Function to hide expense forms and remove blur effect
+        function hideExpenseForms() {
+            expenseForms.forEach(form => {
+                form.style.display = 'none';
+            });
+            categoriesSection.classList.remove('blur-background');
+        }
+
+        // Event listener for clicking on Add Expenses buttons
+        expenseButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const categoryId = this.getAttribute('data-category');
+                hideExpenseForms();
+                showExpenseForm(categoryId);
+            });
+        });
+
+        // Event listener for clicking outside of expense forms to hide them
+        document.addEventListener('click', function(event) {
+            if (!event.target.matches('.add-expense-button') && !event.target.closest('.expenseForm')) {
+                hideExpenseForms();
+            }
+        });
+    });
+</script> --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const expenseButtons = document.querySelectorAll('.add-expense-button');
+        const expenseForms = document.querySelectorAll('.expenseForm');
+
+        // Function to show expense form in the foreground without blur
+        function showExpenseForm(categoryId) {
+            const expenseForm = document.getElementById(`expenseForm${categoryId}`);
+            expenseForm.style.display = 'block';
+            expenseForm.style.zIndex = '100';
+
+            // Appliquer le flou aux éléments autres que le formulaire d'ajout de dépenses
+            document.querySelectorAll('.flou:not(.expenseForm)').forEach(element => {
+                element.style.filter = 'blur(3px)';
+            });
+        }
+
+        // Function to hide expense forms
+        function hideExpenseForms() {
+            expenseForms.forEach(form => {
+                form.style.display = 'none';
+                // Réinitialiser le filtre de flou
+                document.querySelectorAll('.flou:not(.expenseForm)').forEach(element => {
+                    element.style.filter = 'none';
+                });
+            });
+        }
+
+        // Event listener for clicking on Add Expenses buttons
+        expenseButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const categoryId = this.getAttribute('data-category');
+                hideExpenseForms(); // Masquer tous les formulaires avant d'afficher celui-ci
+                showExpenseForm(categoryId);
+            });
+        });
+
+        // Event listener for clicking outside of expense forms to hide them
+        document.addEventListener('click', function(event) {
+            // Vérifier si l'élément cliqué n'est ni le bouton "Ajouter des dépenses" ni à l'intérieur du formulaire
+            if (!event.target.matches('.add-expense-button') && !event.target.closest('.expenseForm')) {
+                hideExpenseForms(); // Masquer le formulaire
+            }
+        });
+    });
+</script>
+
+
+
+
 <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
@@ -1117,24 +1458,23 @@
             event.preventDefault(); // Empêche le lien de suivre le lien par défaut
             $('#profile-section').toggle(); // Affiche ou masque la section profil
         });
-       
+
 
         $('.form-group input[type="submit"').click(function(event) {
-        
-        $('#save-popup').fadeIn(); // Affiche le popup d'enregistrement
-    });
 
-    // Gérer le clic sur le bouton de fermeture du popup
-    $('.close').click(function() {
-        $('#save-popup').fadeOut(); // Masque le popup d'enregistrement
-        $('#profile-section').toggle(); // Affiche ou masque la section profil
+            $('#save-popup').fadeIn(); // Affiche le popup d'enregistrement
+        });
+
+        // Gérer le clic sur le bouton de fermeture du popup
+        $('.close').click(function() {
+            $('#save-popup').fadeOut(); // Masque le popup d'enregistrement
+            $('#profile-section').toggle(); // Affiche ou masque la section profil
+        });
+        /*Gérer le clic sur le bouton "OK"
+        $('#ok-button').click(function() {
+            $('#save-popup').fadeOut(); // Masque le popup d'enregistrement
+            $('#profile-section').toggle(); // Affiche ou masque la section profil
+        });*/
+
     });
-    /*Gérer le clic sur le bouton "OK"
-    $('#ok-button').click(function() {
-        $('#save-popup').fadeOut(); // Masque le popup d'enregistrement
-        $('#profile-section').toggle(); // Affiche ou masque la section profil
-    });*/
-    
-    });
-    
 </script> -->

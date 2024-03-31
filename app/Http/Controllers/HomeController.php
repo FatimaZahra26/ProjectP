@@ -19,7 +19,8 @@ class HomeController extends Controller
         
         // Récupérer les catégories
         $categories = Tag::where('user_id', auth()->id())->get();
-        
+        $expenses = Expense::where('user_id', auth()->id())->get();
+
     
         $header = '';
     
@@ -30,12 +31,22 @@ class HomeController extends Controller
                 $user = Auth::user();
                 $id=$user->id;
                 $budget = Budget::all(); 
-                $expenses = $user->expense;
+                $expensesByCategory = [];
+    foreach ($categories as $category) {
+        $expensesByCategory[$category->id] = [];
+        foreach ($expenses as $expense) {
+            if ($expense->tag_id == $category->id) {
+                $expensesByCategory[$category->id][] = $expense;
+            }
+        }
+    }
                 $todayDate = Carbon::now()->format('F Y');
                 $adminData=User::find($id);
-                return view('dashboard', compact('budget', 'expenses', 'categories', 'header', 'todayDate', 'budgets','adminData')); // Ajoutez 'budgets' ici
+                
+                return view('dashboard', compact('budget', 'expenses', 'categories', 'header', 'todayDate', 'budgets','adminData','expensesByCategory')); // Ajoutez 'budgets' ici
             } elseif ($usertype == 'admin') {
-                $todayDate = Carbon::now()->format('F Y');                $users = User::where('usertype', 'user')->get();
+                $todayDate = Carbon::now()->format('F Y');                
+                $users = User::where('usertype', 'user')->get();
                 $id=Auth::user()->id;
                 $totalUsers = User::where('usertype', '!=', 'admin')->count();
                 $adminData=User::find($id);
@@ -185,7 +196,6 @@ class HomeController extends Controller
         return redirect()->back()->with('success', 'Budget enregistré avec succès');
     
 }
-
 public function savecategorie(Request $request)
 { 
     try {
@@ -195,23 +205,29 @@ public function savecategorie(Request $request)
         $category->name = $request->input('name');
         $category->amount = $request->input('amount');
         $category->user_id = Auth::id();
-        $category->save();
 
-        // Récupérez le dernier budget enregistré pour l'utilisateur authentifié
-        $latestBudget = Budget::latest()->where('user_id', Auth::id())->first();
+        // Fetch the budget for the authenticated user
+        $budget = Budget::where('user_id', Auth::id())->first();
 
-        // Calculez le montant total des catégories déjà ajoutées pour cet utilisateur
-        $totalCategoryAmount = Tag::where('user_id', Auth::id())->sum('amount');
+        // Check if budget exists
+        if($budget) {
+            $category->budget_id = $budget->id;
+            $category->save();
 
-        // Calculez le budget restant
-        $latestBudget->total_budget = $latestBudget->budget_initial - $totalCategoryAmount;
-        $latestBudget->save();
+            // Recalculate the total remaining budget
+            $totalCategoryAmount = Tag::where('user_id', Auth::id())->sum('amount');
+            $budget->total_budget = $budget->budget_initial - $totalCategoryAmount;
+            $budget->save();
 
-        return redirect()->back()->with('success', 'Catégorie enregistrée avec succès');
+            return redirect()->back()->with('success', 'Catégorie enregistrée avec succès');
+        } else {
+            return redirect()->back()->with('error', 'Aucun budget trouvé pour cet utilisateur');
+        }
     } catch (\Exception $e) {
         return redirect()->back()->with('error', 'Une erreur s\'est produite lors de l\'enregistrement de la catégorie');
     }
 }
+
     public function updateProfile(Request $request) 
     {   
         //dd($request->all());
@@ -241,6 +257,58 @@ public function savecategorie(Request $request)
         // Redirect back with success message
         return redirect()->back()->with('success', 'Profile updated successfully');
     }
+    public function saveExpense(Request $request)
+    {
+        // Validation des données du formulaire
+        $validatedData = $request->validate([
+            'tag_id' => 'required|exists:tags,id',
+            'description' => 'required|string',
+            'amount' => 'required|numeric|min:0',
+        ]);
+    
+        try {
+            // Création d'une nouvelle dépense
+            $expense = new Expense();
+            $id = Auth::user()->id;
+            $expense->user_id=$id;
+            $expense->tag_id = $request->input('tag_id');
+            $expense->description = $request->input('description');
+            $expense->amount =$request->input('amount');
+           
+            $expense->save();
+    
+            // Redirection avec un message de succès
+            return redirect()->back()->with('success', 'Expense added successfully!');
+        } catch (\Exception $e) {
+            // En cas d'erreur, rediriger avec un message d'erreur
+            return redirect()->back()->with('error', 'An error occurred while adding the expense.');
+        }
+    }
+    public function getCategoryExpenses()
+    {
+        // Récupérer toutes les catégories de l'utilisateur authentifié
+        $categories = Tag::where('user_id', auth()->id())->get();
+    
+        // Tableau pour stocker les dépenses de chaque catégorie
+        $categoryExpenses = [];
+    
+        // Boucler à travers chaque catégorie et récupérer les dépenses correspondantes
+        foreach ($categories as $category) {
+            // Récupérer les dépenses pour la catégorie actuelle
+            $expenses = Expense::where('tag_id', $category->id)->get();
+            
+            // Ajouter les dépenses de la catégorie actuelle au tableau
+            $categoryExpenses[] = [
+                'tag_id' => $category->id,
+                'expenses' => $expenses
+            ];
+        }
+    
+        // Retourner les dépenses de chaque catégorie au format JSON
+        return response()->json($categoryExpenses);
+    }
+    
+         
     
 }
 
