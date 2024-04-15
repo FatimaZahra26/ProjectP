@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
  // Importez Hash ici si ce n'est pas déjà fait
  use Illuminate\Database\Eloquent\Relations\HasOne; // Import HasOne relationship
 
+ use Illuminate\Notifications\DatabaseNotification;
 
 
 class User extends Authenticatable
@@ -54,6 +55,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Tag::class);
     }
-
+    public function notifications()
+    {
+        return $this->morphMany(DatabaseNotification::class, 'notifiable')
+                    ->orderBy('created_at', 'desc');
+    }
 
 }

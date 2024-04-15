@@ -8,14 +8,18 @@
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 
 
-<div class="sidebar">
-    <div class="profile">
-        <img src="{{ asset('http://127.0.0.1:8000/storage/' . $adminData->profile_picture) }}" alt="Profile Photo"
-            class="profile-img">
-        <h2 style="font-size:18px;font-weight:700">{{ auth()->user()->name }}</h2>
+<div class="sidebar" style="padding-top: 0px">
+    <div class="profile"
+        style="background-image: url('{{ asset('assets/background1.jpg') }}'); background-size: cover; padding-top: 30px; margin-top: 0px; height: 160px;z-index:-1">
+        <div style="z-index: 100">
+            <img src="{{ asset('http://127.0.0.1:8000/storage/' . $adminData->profile_picture) }}" alt="Profile Photo"
+                class="profile-img" style="width: 80px;height:80px;">
+            <h2 style="font-size:20px;font-weight:700;color:rgb(236, 118, 22)">{{ auth()->user()->name }}</h2>
+        </div>
     </div>
     <ul>
         <li><a href="#Home" id="HomeLink"><span class="icon"><i class="fas fa-home"></i></span>Home</a></li>
@@ -63,10 +67,114 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="home">
-                <p style="color: #333" style="font-weight: 600">{{ $todayDate }}</p>
+            <div class="home" id="home">
 
-                <h2>Welcome, {{ auth()->user()->name }}</h2>
+                <div class="weather">
+                    <p style="color: #ccc9ed" style="font-weight: 600">{{ $todayDate }}</p>
+
+                    <h2>Hi, <span style="color: rgb(240, 115, 43);font-size:25px;">{{ auth()->user()->name }}</span>!</h2>
+                    <h4>welcome Home!</h4>
+
+                    @if (!empty($weatherData))
+                        <p>The weather is
+                            {{ $weatherData['weather'][0]['description'] }}, the temperature is:
+                            {{ $weatherData['main']['temp'] }}°C and humidity is {{ $weatherData['main']['humidity'] }}%</p>
+                    @else
+                        <p>Aucune donnée météorologique disponible pour le moment.</p>
+                    @endif
+                </div>
+                <ul class="cards">
+                    @foreach ($budgets as $budget)
+                        <li>
+                            <img src="{{ asset('assets/dol.jpg') }}" alt="" class="dol"
+                                style="width: 50px;border-radius:50%">
+                            <span class="info">
+                                <h3><span>$</span><span class="budget_card">{{ $budget->budget_initial }}</span></h3>
+                                <p>Budget</p>
+                            </span>
+                        </li>
+
+                        <li>
+                            <img src="{{ asset('assets/balance.jpg') }}" alt="" class="dol"
+                                style="width: 50px;border-radius:50%">
+                            <span class="info">
+                                <h3><span>$</span><span class="balance_card">{{ $budget->total_budget }}</span></h3>
+                                <p>Remaining</p>
+                            </span>
+                        </li>
+                    @endforeach
+                </ul>
+
+                <div style="display: flex;margin-left:60%;">
+                    <button class="button-86" id="openForm">Add Budget</button>
+                    <button class="button-87" id="openCategory">Add category</button>
+                </div>
+                <div id="popupForm1" class="popup">
+                    <form name="cc" class="popup-content" method="POST" action="{{ route('save-budget') }}"
+                        style="margin:0 auto;">
+                        @csrf
+                        <span class="close">&times;</span>
+                        <h1 id="h1">Budget:</h1>
+
+                        <label for="category">Budget Amount:</label><br>
+                        <input type="number" id="category" name="category" min="0"><br><br>
+                        <label for="duration">duration:</label><br>
+                        <select id="duration" name="duration" style="width:400px">
+                            <option value="week">Weekly</option>
+                            <option value="month">Monthly</option>
+                        </select><br><br>
+                        <button id="btn-a" type="submit" class="button-55">Send</button>
+                    </form>
+                </div>
+                <div>
+                    @if ($errors->any())
+                        <script>
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Validation Error',
+                                html: '<ul style="list-decoration:none">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>',
+                                confirmButtonText: 'OK'
+                            });
+                        </script>
+                    @endif
+                </div>
+                <div>
+                    @if (session('success'))
+                        <script>
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: '{{ session('success') }}',
+                                confirmButtonText: 'OK'
+                            });
+                        </script>
+                    @endif
+                </div>
+                <div id="popupForm2" class="popup">
+                    <form method="POST" class="popup-content" action="{{ route('save-categorie') }}"
+                        style="margin:0 auto;">
+                        @csrf
+                        <span class="close2">&times;</span>
+
+                        <h1 id="h1">Categorie:</h1>
+
+                        <label for="category">Categoty name:</label><br>
+                        <input type="text" name="name"><br><br>
+                        <label for="category">Categoty Amount:</label><br>
+                        <input type="number" name="amount" id="lbl1" class="transport-input"
+                            placeholder="Entrer le budget" style="margin-left:0px" min="0">
+
+                        <!-- <div class="input-group-ffd">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i id="food" class="fas fa-utensils"></i><label name="name">Food</label><input type="text" id="lbl2" name="amount" class="food-input" placeholder="Entrer le budget">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="input-group-vetment">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i id="vetement" class="fas fa-tshirt"></i><label name="name">Vetement</label><input type="text" id="lbl3" name="amount" class="clothes-input" placeholder="Entrer le budget">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div> -->
+                        <button type="submit" class="button-55" style="margin-left:75%">Save</button>
+
+                    </form>
+                </div>
             </div>
 
             <!-- Content -->
@@ -74,83 +182,11 @@
 
             <div class="balance-section">
 
-                <!-- Section pour afficher les budgets -->
-
-                <div id="home">
 
 
-                    <ul class="cards">
-                        @foreach ($budgets as $budget)
-                            <li>
-                                <img src="{{ asset('assets/dol.jpg') }}" alt="" class="dol"
-                                    style="width: 50px;border-radius:50%">
-                                <span class="info">
-                                    <h3><span>$</span><span class="budget_card">{{ $budget->budget_initial }}</span></h3>
-                                    <p>Budget</p>
-                                </span>
-                            </li>
-
-                            <li>
-                                <img src="{{ asset('assets/balance.jpg') }}" alt="" class="dol"
-                                    style="width: 50px;border-radius:50%">
-                                <span class="info">
-                                    <h3><span>$</span><span class="balance_card">{{ $budget->total_budget }}</span></h3>
-                                    <p>Remaining</p>
-                                </span>
-                            </li>
-                        @endforeach
-                    </ul>
-
-                    <div style="display: flex;margin-left:60%;">
-                        <button class="button-86" id="openForm">Add Budget</button>
-                        <button class="button-87" id="openCategory">Add category</button>
-                    </div>
-                    <div id="popupForm1" class="popup">
-
-                        <form name="cc" class="popup-content" method="POST" action="{{ route('save-budget') }}"
-                            style="margin:0 auto;">
-                            @csrf
-                            <span class="close">&times;</span>
-                            <h1 id="h1">Budget:</h1>
-                            <label for="category">Budget Amount:</label><br>
-                            <input type="number" id="category" name="category" min="0"><br><br>
-                            <label for="duration">duration:</label><br>
-                            <select id="duration" name="duration" style="width:400px">
-                                <option value="week">Weekly</option>
-                                <option value="month">Montly</option>
-                            </select><br><br>
-                            <button id="btn-a" type="submit" class="button-55">Send</button>
-                        </form>
-                    </div>
-                    <div id="popupForm2" class="popup">
-                        <form method="POST" class="popup-content" action="{{ route('save-categorie') }}"
-                            style="margin:0 auto;">
-                            @csrf
-                            <span class="close2">&times;</span>
-
-                            <h1 id="h1">Categorie:</h1>
-
-                            <label for="category">Categoty name:</label><br>
-                            <input type="text" name="name"><br><br>
-                            <label for="category">Categoty Amount:</label><br>
-                            <input type="number" name="amount" id="lbl1" class="transport-input"
-                                placeholder="Entrer le budget" style="margin-left:0px" min="0">
-
-                            <!-- <div class="input-group-ffd">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i id="food" class="fas fa-utensils"></i><label name="name">Food</label><input type="text" id="lbl2" name="amount" class="food-input" placeholder="Entrer le budget">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <div class="input-group-vetment">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i id="vetement" class="fas fa-tshirt"></i><label name="name">Vetement</label><input type="text" id="lbl3" name="amount" class="clothes-input" placeholder="Entrer le budget">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div> -->
-                            <button type="submit" class="button-55" style="margin-left:75%">Save</button>
-
-                        </form>
-                    </div>
-                </div>
                 <!-- Section pour afficher les catégories -->
                 <div class="categories-section" id="categories">
-                    <h2 style="color: #0056b3;margin-left:30%">Your Category List:</h2>
+                    <h1 style="color: #0056b3">Your Category List:</h1>
                     <ul class="cards" style="display: flex; flex-wrap: wrap;margin:0 auto;">
                         @foreach ($categories->chunk(2) as $pair)
                             <ul class="pair" style="width: 40%;padding-left:0px;padding-right:50px;">
@@ -170,10 +206,11 @@
                                             </span>
                                         </li>
                                     </div>
+
                                     <!-- Ajout du formulaire d'ajout de dépenses pour cette catégorie -->
                                     <div id="expenseForm{{ $category->id }}" class="expenseForm" style="display: none;">
                                         <form action="{{ route('expenses.store') }}" method="POST"
-                                            class="popup-content" style="">
+                                            class="popup-content" style="margin:0 auto;margin-bottom:80px;">
                                             @csrf
                                             <h1>Add Expense for {{ $category->name }}</h1>
                                             <input type="hidden" name="tag_id" value="{{ $category->id }}">
@@ -181,7 +218,7 @@
                                             <input type="text" id="description" name="description"><br><br>
                                             <label for="amount">Amount:</label><br>
                                             <input type="number" id="amount" name="amount" min="0"><br><br>
-                                            <button type="submit">Add Expense</button>
+                                            <button type="submit"class="button-55">Add Expense</button>
                                         </form>
                                     </div>
                                     <!-- Liste des dépenses pour cette catégorie -->
@@ -200,13 +237,14 @@
 
                 <!-- profile -->
                 <div class="profile-container" id="profile-section" style="display: none;">
+                    <h1 style="color: #cacee3">Your Profile:</h1>
                     <div class="profile-info">
                         <img src="{{ asset('storage/' . $adminData->profile_picture) }}" alt="Profile Photo"
                             class="profile-img">
                         <form action="{{ route('profile.update') }}" method="post" enctype="multipart/form-data">
                             @csrf
                             <div class="form-group">
-                                <label for="profile_image">choose a new profile picture:</label>
+                                <label for="profile_image">Choose a new profile picture:</label>
                                 <input type="file" id="profile_image" name="photo"
                                     value="{{ $adminData->profile_image }}">
                             </div>
@@ -218,45 +256,46 @@
                                 <label for="email">Email:</label>
                                 <input type="email" id="email" name="email" value="{{ $adminData->email }}">
                             </div>
+                            <!-- Ajoutez le champ pour la ville -->
+                            <div class="form-group">
+                                <label for="city">City:</label>
+                                <input type="text" id="city" name="city" value="{{ $adminData->city }}">
+                            </div>
                             <div class="form-group">
                                 <input type="submit" value="Save changes">
                             </div>
                         </form>
                     </div>
                 </div>
-                <div id="ExpenseList">
-                    @foreach ($categories as $category)
-                        <div class="card" style="background: #f8c263">
-                            <div class="card-header">{{ $category->name }}</div>
-                            <div class="card-body">
-                                @foreach ($expensesByCategory[$category->id] as $expense)
-                                    <div class="expense-item">
-                                        <div class="description">{{ $expense->description }}</div>
-                                        <div class="amount">${{ $expense->amount }}</div>
-                                    </div>
-                                @endforeach
+                <div id="expenses">
+                    <h1 style="color: #0056b3">Your Expenses List:</h1>
+                    <div id="ExpenseList" style="margin-top: 50px;">
+
+                        @foreach ($categories as $category)
+                            <div class="card" style="background: #f8c263">
+                                <div class="card-header">{{ $category->name }}</div>
+                                <div class="card-body">
+                                    @foreach ($expensesByCategory[$category->id] as $expense)
+                                        <div class="expense-item">
+                                            <div class="description">{{ $expense->description }}</div>
+                                            <div class="amount">${{ $expense->amount }}</div>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
-                        </div>
-                    @endforeach
-                </div>
-
-
-                <div style="width: 400px; height: 400px;">
-                    <canvas id="budgetPieChart"></canvas>
-
-                </div>
-
-                <!-- Popup d'enregistrement -->
-                {{-- <div class="popup" id="save-popup">
-                    <div class="popup-content">
-                        <span class="close">&times;</span>
-                        <p>Les modifications ont été enregistrées avec succès!</p>
+                        @endforeach
                     </div>
-
-
-
-
-                </div> --}}
+                </div>
+                <div id="dashboard">
+                    <div style="width: 350px; height: 33n0px;">
+                        <h1 style="color: #0056b3">Your Dashboard:</h1>
+                        <canvas id="budgetPieChart"></canvas>
+                    </div>
+                    <div style="width: 290px; height: 400px; margin-top: 130px; margin-left: 50px;">
+                        <canvas id="budgetVariationChart"></canvas>
+                    </div>
+                </div>
+                
 
 
             </div>
@@ -266,7 +305,62 @@
 @endsection
 <style>
     /**/
-    /* Appliquer un flou aux éléments autres que le formulaire d'ajout de dépenses */
+    #dashboard {
+        display: flex;
+    }
+
+    .chart-container {
+        width: 50%;
+        padding: 20px;
+    }
+
+    #dashboard h1 {
+        margin-left: 50%;
+        width: 100%;
+    }
+
+    .weather {
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-image: url('{{ asset('assets/background1.jpg') }}');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 20px;
+    
+    }
+
+    .weather h4 {
+        font-size: 24px;
+        margin-bottom: 10px;
+
+    }
+
+    .weather p {
+        font-size: 20px;
+        margin-bottom: 8px;
+        font-weight: 600;
+
+    }
+
+    .weather p:last-child {
+        margin-bottom: 0;
+        /* Supprime la marge en bas du dernier paragraphe */
+    }
+
+    .weather p::before {
+        content: "\2022";
+        /* Utilise un point comme bullet */
+        display: inline-block;
+        width: 10px;
+        margin-right: 8px;
+    }
+
+    .weather p.empty {
+        font-style: italic;
+        color: #999;
+    }
 
 
     /* Positionner le formulaire d'ajout de dépenses au premier plan */
@@ -771,7 +865,7 @@
         gap: 1.5rem;
         cursor: pointer;
         transition: all 0.3s ease-in;
-        margin-bottom: 50px;
+        margin-bottom: 20px;
     }
 
     .container .cards li:hover {
@@ -1013,7 +1107,7 @@
 
     .sidebar ul {
         list-style: none;
-        margin-top: 70px;
+        margin-top: 50px;
         padding-left: 5px;
     }
 
@@ -1158,31 +1252,77 @@
         color: #4caf50;
     }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    // Récupérez les données de la vue Laravel
+    // Retrieve the Laravel budget data
     document.addEventListener('DOMContentLoaded', function() {
-        // Votre script JavaScript pour initialiser le graphique ici
+        // Your Laravel budget data
+        var initialBudget = {!! $initialBudget !!}; // Assuming you pass the initial budget from the controller
+        var totalBudget = {!! $totalBudget !!}; // Assuming you pass the total budget from the controller
+
+        // Calculate the variation from the initial budget
+        var variation = (totalBudget / initialBudget) * 100;
+
+        // Remaining budget
+        var remainingBudget = 100 - variation;
+
+        // Get the canvas context
+        var ctx = document.getElementById('budgetVariationChart').getContext('2d');
+
+        // Create the donut chart
+        var budgetVariationChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Expenses', 'Remaining Budget'],
+                datasets: [{
+                    data: [remainingBudget, variation],
+                    backgroundColor: [
+                        'rgba(23, 84, 226, 0.8)',
+                        'rgba(180, 203, 164, 0.8)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    datalabels: {
+                        display: true,
+                        color: '#fff',
+                        formatter: (value, ctx) => {
+                            return value.toFixed(2) + "%";
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<script>
+    // Retrieve the data from Laravel view
+    document.addEventListener('DOMContentLoaded', function() {
+        // Your JavaScript script to initialize the chart here
         var categories = {!! json_encode($categories) !!};
 
-        // Initialisez les tableaux pour les labels et les données
+        // Initialize arrays for labels and data
         var labels = [];
         var data = [];
 
-        // Remplissez les tableaux avec les données récupérées
+        // Fill the arrays with retrieved data
         categories.forEach(function(category) {
             labels.push(category.name);
             data.push(category.amount);
         });
 
-        // Obtenez le contexte du canvas
+        // Get the canvas context
         var ctx = document.getElementById('budgetPieChart').getContext('2d');
 
-        // Créez le pie chart
+        // Create the pie chart
         var budgetPieChart = new Chart(ctx, {
             type: 'pie',
             data: {
@@ -1201,6 +1341,11 @@
                 }]
             },
             options: {
+                layout: {
+                    padding: {
+                        bottom: 30 // Add bottom padding for the labels
+                    }
+                },
                 plugins: {
                     datalabels: {
                         display: true,
@@ -1235,7 +1380,9 @@
             // Afficher la section "Home"
             $('#categories').show();
             $('#budgetPieChart').hide();
+            $('#dashboard').hide();
             $('#ExpenseList').hide();
+            $('#expenses').hide();
 
 
         });
@@ -1245,8 +1392,10 @@
             $('#profile-section').hide();
             // Afficher la section "Home"
             $('#categories').hide();
+            $('#dashboard').show();
             $('#budgetPieChart').show();
             $('#ExpenseList').hide();
+            $('#expenses').hide();
 
 
         });
@@ -1257,7 +1406,9 @@
             // Afficher la section "Home"
             $('#home').show();
             $('#budgetPieChart').hide();
+            $('#dashboard').hide();
             $('#ExpenseList').hide();
+            $('#expenses').hide();
 
 
         });
@@ -1267,8 +1418,10 @@
             // Afficher la section "Home"
             $('#home').hide();
             $('#budgetPieChart').hide();
+            $('#dashboard').hide();
             $('#profile-section').show();
             $('#ExpenseList').hide();
+            $('#expenses').hide();
 
 
         });
@@ -1278,9 +1431,10 @@
             // Afficher la section "Home"
             $('#home').hide();
             $('#budgetPieChart').hide();
+            $('#dashboard').hide();
             $('#profile-section').hide();
             $('#ExpenseList').show();
-
+            $('#expenses').show();
 
 
         });
@@ -1290,9 +1444,11 @@
         // Masquer les autres sections sauf la section "Home"
         document.getElementById('categories').style.display = 'none';
         document.getElementById('budgetPieChart').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'none';
         // Afficher la section "Home"
         document.getElementById('home').style.display = 'block';
         document.getElementById('ExpenseList').style.display = 'none';
+        document.getElementById('expenses').style.display = 'none';
     });
 
     /**/

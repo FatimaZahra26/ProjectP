@@ -1,66 +1,93 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Tag;
 use Dompdf\Dompdf;
 use App\Models\Expense;
 use App\Models\Budget;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\BudgetAlert;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
+
 use Illuminate\Support\Facades\Hash;
+
 class HomeController extends Controller
 {
     public function index()
     {
         // Récupérer les budgets
         $budgets = Budget::where('user_id', auth()->id())->get();
-        
+
         // Récupérer les catégories
         $categories = Tag::where('user_id', auth()->id())->get();
         $expenses = Expense::where('user_id', auth()->id())->get();
+        $tags = Tag::where('user_id', auth()->id())->get();
+        $initialBudget = $budgets->sum('budget_initial');
+        $totalExpenses = $tags->sum('amount');
+        $totalBudget = $initialBudget - $totalExpenses;
 
-    
+
         $header = '';
-    
+
         if (Auth::check()) {
             $usertype = Auth::user()->usertype;
             if ($usertype == 'user') {
-                
+
                 $user = Auth::user();
-                $id=$user->id;
-                $budget = Budget::all(); 
+                $id = $user->id;
+                $budget = Budget::all();
                 $expensesByCategory = [];
-    foreach ($categories as $category) {
-        $expensesByCategory[$category->id] = [];
-        foreach ($expenses as $expense) {
-            if ($expense->tag_id == $category->id) {
-                $expensesByCategory[$category->id][] = $expense;
-            }
-        }
-    }
+                $weatherData = $this->getWeatherData();
+
+                foreach ($categories as $category) {
+                    $expensesByCategory[$category->id] = [];
+                    foreach ($expenses as $expense) {
+                        if ($expense->tag_id == $category->id) {
+                            $expensesByCategory[$category->id][] = $expense;
+                        }
+                    }
+                }
                 $todayDate = Carbon::now()->format('F Y');
-                $adminData=User::find($id);
-                
-                return view('dashboard', compact('budget', 'expenses', 'categories', 'header', 'todayDate', 'budgets','adminData','expensesByCategory')); // Ajoutez 'budgets' ici
+                $adminData = User::find($id);
+                // Check if any budget is exceeded or approaching the limit
+                foreach ($budgets as $budget) {
+                    $totalExpenses = $expensesByCategory[$budget->id] ?? 0;
+                    $remainingBudget = $budget->budget_initial - $totalExpenses;
+                    $budgetThreshold = $budget->budget_initial * 0.8; // Example: 80% of the budget limit
+
+                    if ($remainingBudget <= 0) {
+                        // Send notification for exceeded budget
+                        $this->sendBudgetAlert($budget, 'exceeded');
+                    } elseif ($remainingBudget <= $budgetThreshold) {
+                        // Send notification for approaching budget limit
+                        $this->sendBudgetAlert($budget, 'approaching');
+                    }
+                }
+
+                return view('dashboard', compact('budget', 'expenses', 'categories', 'header', 'todayDate', 'budgets', 'adminData', 'expensesByCategory', 'weatherData', 'initialBudget', 'totalBudget')); // Ajoutez 'budgets' ici
             } elseif ($usertype == 'admin') {
-                $todayDate = Carbon::now()->format('F Y');                
+                $todayDate = Carbon::now()->format('F Y');
                 $users = User::where('usertype', 'user')->get();
-                $id=Auth::user()->id;
+                $id = Auth::user()->id;
                 $totalUsers = User::where('usertype', '!=', 'admin')->count();
-                $adminData=User::find($id);
+                $adminData = User::find($id);
                 $chartData = $this->getChartData();
 
-            
-                return view('admin.adminhome', compact('users', 'header','todayDate','adminData','totalUsers','chartData'));
+
+                return view('admin.adminhome', compact('users', 'header', 'todayDate', 'adminData', 'totalUsers', 'chartData'));
             } else {
                 return redirect()->back();
             }
         }
     }
 
-    
+
     public function edit($id)
     {
         $header = '';
@@ -70,26 +97,25 @@ class HomeController extends Controller
 
     public function update(Request $request, $id)
     {
-       
+
         $user = User::findOrFail($id);
         $user->update($request->all());
 
         return redirect()->route('admin.index')->with('success', 'User updated successfully');
     }
     /**/
-    public function Profile(){
+    public function Profile()
+    {
         $header = '';
-        $id=Auth::user()->id;
-        $adminData=User::find($id);
-        return view('admin.admin_profile',compact('adminData', 'header'));
-
-
+        $id = Auth::user()->id;
+        $adminData = User::find($id);
+        return view('admin.admin_profile', compact('adminData', 'header'));
     }
-    public function adminupdate(Request $request) 
-    {   
+    public function adminupdate(Request $request)
+    {
         // Get the authenticated user's ID
         $id = Auth::user()->id;
-        
+
         // Find the user by ID
         $user = User::findOrFail($id);
 
@@ -97,18 +123,18 @@ class HomeController extends Controller
         if ($request->hasFile('photo')) {
             // Store the uploaded file in the 'photos' directory under the 'public' disk
             $photoPath = $request->file('photo')->store('photos', 'public');
-            
+
             // Update the user's profile picture path
             $user->profile_picture = $photoPath;
         }
-    
+
         // Update other user details
         $user->name = $request->input('name');
         $user->email = $request->input('email');
-        
+
         // Save the updated user record
         $user->save();
-    
+
         // Redirect back with success message
         return redirect()->back()->with('success', 'Profile updated successfully');
     }
@@ -116,124 +142,143 @@ class HomeController extends Controller
     {
         // Retrieve users who are not admins
         $users = User::where('usertype', '!=', 'admin')->get();
-    
+
         // Load the view with the filtered users
         $html = view('admin.user_report', compact('users'));
-    
+
         // Create a new Dompdf instance
         $pdf = new Dompdf();
-    
+
         // Load HTML content into Dompdf
         $pdf->loadHtml($html);
-    
+
         // Set paper size and orientation
         $pdf->setPaper('A4', 'landscape');
-    
+
         // Render PDF
         $pdf->render();
-    
+
         // Stream the PDF to the browser
         return $pdf->stream('user_report.pdf');
     }
-  
+
     private function getChartData()
     {
-        $start_date = Carbon::now()->subDays(10); 
+        $start_date = Carbon::now()->subDays(10);
         $end_date = Carbon::now();
-    
+
         // Récupérer les données pour tous les jours
         $data = [];
         $labels = [];
         $current_date = $start_date->copy();
-    
+
         while ($current_date->lte($end_date)) {
             $date = $current_date->toDateString();
             $totalUsers = User::where('usertype', '!=', 'admin')
-                              ->whereDate('created_at', $date)
-                              ->count();
+                ->whereDate('created_at', $date)
+                ->count();
             $data[] = $totalUsers;
             $labels[] = $date;
             $current_date->addDay();
         }
-    
+
         // Créer un tableau associatif avec les libellés et les données
         $chartData = [
             'labels' => $labels,
             'data' => $data,
         ];
-    
+
         return $chartData;
     }
 
-/* */
+    /* */
     public function saveBudget(Request $request)
-{
-    // Validez les données du formulaire
-    $request->validate([
-        'category' => 'required|numeric', // Assurez-vous que le champ category est numérique
-        'duration' => 'required',
-    ]);
+    {
 
-        // Récupérez l'utilisateur authentifié
+        // Validate the form data
+        $validatedData = $request->validate([
+            'category' => 'required|numeric', // Ensure the category field is numeric
+            'duration' => 'required',
+        ]);
+
+        // Get the authenticated user
         $user = Auth::user();
 
-        // Vérifiez si l'utilisateur a déjà un budget enregistré
+        // Check if there is already a budget of the same type for the same period
+        $existingBudget = Budget::where('user_id', $user->id)
+            ->where('budget_type', $request->input('duration'))
+            ->where('created_at', '>=', now()->startOfWeek()) // Adjust this condition based on your duration (week or month)
+            ->where('created_at', '<=', now()->endOfWeek()) // Adjust this condition based on your duration (week or month)
+            ->first();
 
-        
-            // Si l'utilisateur n'a pas de budget enregistré, créez un nouvel objet Budget
-            $budget = new Budget();
-            $budget->user_id = $user->id;
-        
+        if ($existingBudget) {
+            // If a budget of the same type for the same period already exists, redirect back with an error message
+            return redirect()->back()->withErrors(['error' => 'You have already set a budget of the same type for this period.']);
+        }
 
-        // Récupérer le montant du budget depuis le formulaire
-        $budget->budget_initial = $request->input('category');
+        // Create a new budget
+        $budget = new Budget();
+        $budget->user_id = $user->id;
         $budget->total_budget = $request->input('category');
+        $budget->budget_initial = $request->input('category');
         $budget->budget_type = $request->input('duration');
         $budget->save();
-        
-        
-        // Redirigez avec un message de succès
-        return redirect()->back()->with('success', 'Budget enregistré avec succès');
-    
-}
-public function savecategorie(Request $request)
-{ 
-    try {
-        // Enregistrez les données dans la base de données
-
-        $category = new Tag();
-        $category->name = $request->input('name');
-        $category->amount = $request->input('amount');
-        $category->user_id = Auth::id();
-
-        // Fetch the budget for the authenticated user
-        $budget = Budget::where('user_id', Auth::id())->first();
-
-        // Check if budget exists
-        if($budget) {
-            $category->budget_id = $budget->id;
-            $category->save();
-
-            // Recalculate the total remaining budget
-            $totalCategoryAmount = Tag::where('user_id', Auth::id())->sum('amount');
-            $budget->total_budget = $budget->budget_initial - $totalCategoryAmount;
-            $budget->save();
-
-            return redirect()->back()->with('success', 'Catégorie enregistrée avec succès');
-        } else {
-            return redirect()->back()->with('error', 'Aucun budget trouvé pour cet utilisateur');
-        }
-    } catch (\Exception $e) {
-        return redirect()->back()->with('error', 'Une erreur s\'est produite lors de l\'enregistrement de la catégorie');
+        // Redirect with a success message
+        return redirect()->back()->with('success', 'Budget saved successfully.');
     }
-}
+    public function savecategorie(Request $request)
+    {
+        try {
+            // Get the authenticated user
+            $user = Auth::user();
 
-    public function updateProfile(Request $request) 
-    {   
+            // Check if the total amount of categories exceeds the initial budget
+            $totalCategoryAmount = Tag::where('user_id', $user->id)->sum('amount');
+
+            // Get the initial budget
+            $initialBudget = Budget::where('user_id', $user->id)->sum('budget_initial');
+
+            // Check if adding the new category would exceed the initial budget
+            $proposedTotalAmount = $totalCategoryAmount + $request->input('amount');
+            if ($proposedTotalAmount > $initialBudget) {
+                // Redirect back with an error message
+                return redirect()->back()->withErrors(['error'=> 'Cannot save category. Exceeds initial budget.']);
+            }
+
+            // Create a new category
+            $category = new Tag();
+            $category->name = $request->input('name');
+            $category->amount = $request->input('amount');
+            $category->user_id = $user->id;
+
+            // Fetch the budget for the authenticated user
+            $budget = Budget::where('user_id', $user->id)->first();
+
+            // Check if budget exists
+            if ($budget) {
+                $category->budget_id = $budget->id;
+                $category->save();
+
+                // Recalculate the total remaining budget
+                $totalCategoryAmount = Tag::where('user_id', $user->id)->sum('amount');
+                $budget->total_budget = $budget->budget_initial - $totalCategoryAmount;
+                $budget->save();
+
+                return redirect()->back()->with('success', 'Catégorie enregistrée avec succès');
+            } else {
+                return redirect()->back()->with('error', 'Aucun budget trouvé pour cet utilisateur');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Une erreur s\'est produite lors de l\'enregistrement de la catégorie');
+        }
+    }
+
+    public function updateProfile(Request $request)
+    {
         //dd($request->all());
         // Get the authenticated user's ID
         $id = Auth::user()->id;
-        
+
         // Find the user by ID
         $user = User::findOrFail($id);
 
@@ -241,19 +286,19 @@ public function savecategorie(Request $request)
         if ($request->hasFile('photo')) {
             // Store the uploaded file in the 'photos' directory under the 'public' disk
             $profileImagePath = $request->file('photo')->store('profile_images', 'public');
-            
+
             // Update the user's profile picture path
-            $user->profile_picture = $profileImagePath ;
+            $user->profile_picture = $profileImagePath;
         }
-    
+
         // Update other user details
         $user->name = $request->input('name');
         $user->email = $request->input('email');
-        
-        
+        $user->city = $request->input('city');
+
         // Save the updated user record
         $user->save();
-    
+
         // Redirect back with success message
         return redirect()->back()->with('success', 'Profile updated successfully');
     }
@@ -265,18 +310,18 @@ public function savecategorie(Request $request)
             'description' => 'required|string',
             'amount' => 'required|numeric|min:0',
         ]);
-    
+
         try {
             // Création d'une nouvelle dépense
             $expense = new Expense();
             $id = Auth::user()->id;
-            $expense->user_id=$id;
+            $expense->user_id = $id;
             $expense->tag_id = $request->input('tag_id');
             $expense->description = $request->input('description');
-            $expense->amount =$request->input('amount');
-           
+            $expense->amount = $request->input('amount');
+
             $expense->save();
-    
+
             // Redirection avec un message de succès
             return redirect()->back()->with('success', 'Expense added successfully!');
         } catch (\Exception $e) {
@@ -288,32 +333,72 @@ public function savecategorie(Request $request)
     {
         // Récupérer toutes les catégories de l'utilisateur authentifié
         $categories = Tag::where('user_id', auth()->id())->get();
-    
+
         // Tableau pour stocker les dépenses de chaque catégorie
         $categoryExpenses = [];
-    
+
         // Boucler à travers chaque catégorie et récupérer les dépenses correspondantes
         foreach ($categories as $category) {
             // Récupérer les dépenses pour la catégorie actuelle
             $expenses = Expense::where('tag_id', $category->id)->get();
-            
+
             // Ajouter les dépenses de la catégorie actuelle au tableau
             $categoryExpenses[] = [
                 'tag_id' => $category->id,
                 'expenses' => $expenses
             ];
         }
-    
+
         // Retourner les dépenses de chaque catégorie au format JSON
         return response()->json($categoryExpenses);
     }
-    
-         
-    
+
+    private function getWeatherData()
+    {
+        $userCity = auth()->user()->city;
+        $apiKey = config('services.openweathermap.key');
+
+        if ($userCity) {
+            try {
+                $response = Http::get("https://api.openweathermap.org/data/2.5/weather?q=$userCity&appid=$apiKey&units=metric");
+                $weatherData = $response->json();
+                return $weatherData;
+            } catch (\Exception $e) {
+                return [];
+            }
+        } else {
+            return [];
+        }
+    }
+    public function getBudgetVariationData()
+    {
+        $budgets = Budget::where('user_id', auth()->id())->orderBy('created_at')->get();
+
+        $labels = $budgets->pluck('created_at')->map(function ($date) {
+            return $date->format('Y-m-d');
+        });
+
+        $data = $budgets->pluck('total_budget');
+
+        return response()->json([
+            'labels' => $labels,
+            'data' => $data,
+        ]);
+    }
+    private function sendBudgetAlert($budget, $status)
+    {
+        // Get the authenticated user
+        $user = auth()->user();
+
+        // Determine the appropriate message based on the status
+        $message = '';
+        if ($status === 'exceeded') {
+            $message = "Your budget for {$budget->budget_type} has been exceeded.";
+        } elseif ($status === 'approaching') {
+            $message = "Your budget for {$budget->budget_type} is approaching its limit.";
+        }
+
+        // Send notification to the user
+        Notification::send($user, new BudgetAlert($message));
+    }
 }
-
-
-
-
-   
-    
