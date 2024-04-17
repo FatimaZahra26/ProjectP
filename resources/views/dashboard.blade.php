@@ -64,8 +64,60 @@
         </form>
     </ul>
 </div>
+<div class="navbar">
+
+    <ul>
+
+        <li><a href="#Home" id="HomeLinkNav"><span class="icon"><i class="fas fa-home"></i></span></a></li>
+        <li>
+            <a href="#Dashboard" id="DashboardLinkNav">
+                <span class="icon"><i class="fas fa-desktop"></i></span>
+
+            </a>
+        </li>
+
+        <li>
+            <a href="#Expenses" id="ExpenseLinkNav">
+                <span class="icon"><i class='fas fa-file-invoice-dollar'></i></span>
+
+            </a>
+        </li>
+        <li>
+            <a href="#Category" id="categoryLinkNav">
+                <span class="icon"><i class="fa fa-list-alt"></i></span>
+
+            </a>
+        </li>
+        <li>
+            <a href="#Profile" id="profile-linkNav">
+                <span class="icon"><i class='fas fa-user-cog'></i></span>
+            </a>
+        </li>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <li>
+
+
+                <x-responsive-nav-link :href="route('logout')"
+                    onclick="event.preventDefault();
+                                            this.closest('form').submit();">
+                    <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+                </x-responsive-nav-link>
+
+            </li>
+        </form>
+        <div class="profile-info">
+
+            <img src="{{ asset('http://127.0.0.1:8000/storage/' . $adminData->profile_picture) }}" alt="Profile Photo"
+                class="profile-img">
+
+
+        </div>
+    </ul>
+</div>
+
 @section('content')
-    <div class="container-fluid">
+    <div class="container-fluid" style="margin-top:50px;">
         <div class="row">
             <div class="home" id="home">
 
@@ -78,7 +130,8 @@
                     @if (!empty($weatherData))
                         <p>The weather is
                             {{ $weatherData['weather'][0]['description'] }}, the temperature is:
-                            {{ $weatherData['main']['temp'] }}°C and humidity is {{ $weatherData['main']['humidity'] }}%</p>
+                            {{ $weatherData['main']['temp'] }}°C and humidity is {{ $weatherData['main']['humidity'] }}%
+                        </p>
                     @else
                         <p>Aucune donnée météorologique disponible pour le moment.</p>
                     @endif
@@ -92,8 +145,32 @@
                                 <h3><span>$</span><span class="budget_card">{{ $budget->budget_initial }}</span></h3>
                                 <p>Budget</p>
                             </span>
+                            <div style="margin-top:100px;display:flex; padding-top:30px;flex-direction:row;">
+                                <button id="update_btn"><i class="fas fa-pencil-alt"></i></button>
+                                <form action="{{ route('budgets.delete', $budget->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE') <!-- Use the blade directive to include the DELETE method -->
+                                    <button id="deletebtn" type="submit"><i class="fa fa-trash" aria-hidden="true"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </li>
-
+                        <div id='updateforme'>
+                            <form name="UPDATE" class="popup-content" method="POST"
+                                action="{{ route('budgets.update', $budget->id) }}" style="margin:20 auto;">
+                                @csrf
+                                <span class="close3">&times;</span>
+                                <h1 id="h1">Update your Budget:</h1>
+                                <label for="category">New budget:</label><br>
+                                <input type="number" id="category" name="category" min="0"><br><br>
+                                <label for="duration">duration:</label><br>
+                                <select id="duration" name="duration" style="width:400px">
+                                    <option value="week">Weekly</option>
+                                    <option value="month">Montly</option>
+                                </select><br><br>
+                                <button id="btn-a" type="submit" class="button-55">Send</button>
+                            </form>
+                        </div>
                         <li>
                             <img src="{{ asset('assets/balance.jpg') }}" alt="" class="dol"
                                 style="width: 50px;border-radius:50%">
@@ -165,12 +242,12 @@
                             placeholder="Entrer le budget" style="margin-left:0px" min="0">
 
                         <!-- <div class="input-group-ffd">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i id="food" class="fas fa-utensils"></i><label name="name">Food</label><input type="text" id="lbl2" name="amount" class="food-input" placeholder="Entrer le budget">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="input-group-vetment">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i id="vetement" class="fas fa-tshirt"></i><label name="name">Vetement</label><input type="text" id="lbl3" name="amount" class="clothes-input" placeholder="Entrer le budget">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div> -->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i id="food" class="fas fa-utensils"></i><label name="name">Food</label><input type="text" id="lbl2" name="amount" class="food-input" placeholder="Entrer le budget">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <div class="input-group-vetment">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i id="vetement" class="fas fa-tshirt"></i><label name="name">Vetement</label><input type="text" id="lbl3" name="amount" class="clothes-input" placeholder="Entrer le budget">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div> -->
                         <button type="submit" class="button-55" style="margin-left:75%">Save</button>
 
                     </form>
@@ -295,7 +372,7 @@
                         <canvas id="budgetVariationChart"></canvas>
                     </div>
                 </div>
-                
+
 
 
             </div>
@@ -304,7 +381,92 @@
     </div>
 @endsection
 <style>
+   
+
+    .navbar {
+        display: none;
+    }
+
+    @media screen and (max-width: 780px) {
+        .sidebar {
+            display: none;
+        }
+
+        .navbar {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #75cdf3;
+            padding: 15px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .navbar .profile-info {}
+
+        .navbar .profile-info img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-left: 50px;
+            margin-top:5px;
+            border: 2px solid #fff;
+            /* Ajout d'une bordure blanche autour de l'image de profil */
+        }
+
+        .navbar .profile-info h2 {
+            color: #fff;
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .navbar ul {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            margin-left: 20px;
+        }
+
+        .navbar ul li {
+            margin-right: 35px;
+            margin-top:20px;
+        }
+
+        .navbar ul li:last-child {
+            margin-right: 0;
+        }
+
+        .navbar ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            transition: color 0.3s ease;
+            /* Ajout d'une transition pour la couleur du texte au survol */
+        }
+
+        .navbar ul li a:hover {
+            color: #19B3D3;
+        }
+
+    }
+
     /**/
+    #update_btn {
+        margin-left: 40px;
+        width: 30px;
+        height: 30px;
+        margin-right: 5px;
+    }
+
+    #deletebtn {
+        width: 30px;
+        height: 30px;
+    }
+
     #dashboard {
         display: flex;
     }
@@ -328,7 +490,7 @@
         background-position: center;
         color: white;
         padding: 20px;
-    
+
     }
 
     .weather h4 {
@@ -449,7 +611,8 @@
         transform: translate(-50%, -50%);
     }
 
-    .close {
+    .close,
+    .close3 {
         position: absolute;
         top: 10px;
         right: 10px;
@@ -459,6 +622,8 @@
     /*profile css*/
     .profile-container {
         max-width: 400px;
+        height: 600px;
+        ;
         margin: 0 auto;
         padding: 20px;
         border: 1px solid #ccc;
@@ -597,7 +762,8 @@
 
     /**/
     .close,
-    .close2 {
+    .close2,
+    .close3 {
         color: #aaa;
         float: right;
         font-size: 28px;
@@ -607,7 +773,9 @@
     .close:hover,
     .close2:hover,
     .close:focus,
-    .close2:focus {
+    .close2:focus,
+    .close3:hover,
+    .close3:focus {
         color: black;
         text-decoration: none;
         cursor: pointer;
@@ -843,7 +1011,7 @@
     #btn-a {}
 
     #h1 {
-        margin-right: 660px;
+        margin-right: 60px;
     }
 
     /**/
@@ -1302,7 +1470,30 @@
         });
     });
 </script>
+<script>
+    /*pop up update*/
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('update_btn').addEventListener('click', function() {
+            document.getElementById('updateforme').style.display = 'block';
+        });
 
+        document.querySelector('.close3').addEventListener('click', function() {
+            document.getElementById('updateforme').style.display = 'none';
+        });
+
+        // window.addEventListener('click', function(event) {
+        //     if (event.target == document.getElementById('updateforme')) {
+        //         document.getElementById('popupForm2').style.display = 'none';
+        //     }
+        // });
+
+        // Prevent the form from being submitted
+        document.getElementById('myForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+        });
+    });
+</script>
 <script>
     // Retrieve the data from Laravel view
     document.addEventListener('DOMContentLoaded', function() {
@@ -1386,7 +1577,33 @@
 
 
         });
+        $("#categoryLinkNav").click(function() {
+            // Masquer les autres sections
+            $('#home').hide();
+            $('#profile-section').hide();
+            // Afficher la section "Home"
+            $('#categories').show();
+            $('#budgetPieChart').hide();
+            $('#dashboard').hide();
+            $('#ExpenseList').hide();
+            $('#expenses').hide();
+
+
+        });
         $("#DashboardLink").click(function() {
+            // Masquer les autres sections
+            $('#home').hide();
+            $('#profile-section').hide();
+            // Afficher la section "Home"
+            $('#categories').hide();
+            $('#dashboard').show();
+            $('#budgetPieChart').show();
+            $('#ExpenseList').hide();
+            $('#expenses').hide();
+
+
+        });
+        $("#DashboardLinkNav").click(function() {
             // Masquer les autres sections
             $('#home').hide();
             $('#profile-section').hide();
@@ -1412,7 +1629,33 @@
 
 
         });
+        $("#HomeLinkNav").click(function() {
+            // Masquer les autres sections
+            $('#categories').hide();
+            $('#profile-section').hide();
+            // Afficher la section "Home"
+            $('#home').show();
+            $('#budgetPieChart').hide();
+            $('#dashboard').hide();
+            $('#ExpenseList').hide();
+            $('#expenses').hide();
+
+
+        });
         $("#profile-link").click(function() {
+            // Masquer les autres sections
+            $('#categories').hide();
+            // Afficher la section "Home"
+            $('#home').hide();
+            $('#budgetPieChart').hide();
+            $('#dashboard').hide();
+            $('#profile-section').show();
+            $('#ExpenseList').hide();
+            $('#expenses').hide();
+
+
+        });
+        $("#profile-linkNav").click(function() {
             // Masquer les autres sections
             $('#categories').hide();
             // Afficher la section "Home"
@@ -1438,6 +1681,19 @@
 
 
         });
+        $("#ExpenseLinkNav").click(function() {
+            // Masquer les autres sections
+            $('#categories').hide();
+            // Afficher la section "Home"
+            $('#home').hide();
+            $('#budgetPieChart').hide();
+            $('#dashboard').hide();
+            $('#profile-section').hide();
+            $('#ExpenseList').show();
+            $('#expenses').show();
+
+
+        });
 
     });
     document.addEventListener('DOMContentLoaded', function() {
@@ -1445,6 +1701,7 @@
         document.getElementById('categories').style.display = 'none';
         document.getElementById('budgetPieChart').style.display = 'none';
         document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('updateforme').style.display = 'none';
         // Afficher la section "Home"
         document.getElementById('home').style.display = 'block';
         document.getElementById('ExpenseList').style.display = 'none';

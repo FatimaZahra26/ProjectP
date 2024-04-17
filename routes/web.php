@@ -29,7 +29,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/save-categorie', [HomeController::class, 'savecategorie'])->name('save-categorie');
     Route::post('/expenses/store', [HomeController::class, 'saveExpense'])->name('expenses.store');
     Route::get('/get-category-expenses', [HomeController::class, 'getCategoryExpenses'])->name('get-category-expenses');
-
+    Route::post('/budgets/update/{id}', [HomeController::class, 'updateBudget'])->name('budgets.update');
+    Route::delete('/budgets/delete/{id}', [HomeController::class, 'deleteBudget'])->name('budgets.delete');
        
 });
 // Routes pour la gestion du profil de l'utilisateur connecté

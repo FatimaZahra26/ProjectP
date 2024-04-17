@@ -401,4 +401,38 @@ class HomeController extends Controller
         // Send notification to the user
         Notification::send($user, new BudgetAlert($message));
     }
+    public function updateBudget(Request $request, $id)
+{
+    // Validez les données du formulaire
+    $request->validate([
+        'category' => 'required|numeric',
+        'duration' => 'required',
+    ]);
+
+    // Trouvez le budget par ID
+    $budget = Budget::findOrFail($id);
+
+    // Mettez à jour les détails du budget
+    $budget->budget_initial = $request->input('category');
+    $budget->total_budget = $request->input('category');
+    $budget->budget_type = $request->input('duration');
+    $budget->save();
+
+    // Redirigez avec un message de succès
+    return redirect()->back()->with('success', 'Budget updated successfully');
+}
+
+public function deleteBudget($id)
+{
+    // Trouvez le budget par ID
+    $budget = Budget::findOrFail($id);
+
+    // Supprimez le budget
+    $budget->delete();
+
+    // Redirigez avec un message de succès
+    return redirect()->back()->with('success', 'Budget deleted successfully');
+}
+    
+    
 }
