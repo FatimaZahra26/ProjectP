@@ -1609,6 +1609,17 @@
         opacity: 0;
         transition: .3s;
     }
+    .updatebudget{
+    position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        /* Une valeur suffisamment élevée pour s'assurer que les formulaires sont au premier plan */
+        display: none;
+        background: #f8f9f9;
+        width: 35%;
+}
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1710,26 +1721,27 @@
         const expenseButtons = document.querySelectorAll('.update_budget');
         const expenseForms = document.querySelectorAll('.updatebudget');
 
-        // Function to show expense form in the foreground without blur
+        // Function to show expense form and apply blur effect to other elements
         function showExpenseForm(categoryId) {
             const expenseForm = document.getElementById(`updatebudget${categoryId}`);
             expenseForm.style.display = 'block';
             expenseForm.style.zIndex = '100';
 
-            // Appliquer le flou aux éléments autres que le formulaire d'ajout de dépenses
-            document.querySelectorAll('.flou:not(.updatebudget)').forEach(element => {
+            // Apply blur effect to other elements
+            document.querySelectorAll('.cards > li:not(#updatebudget'+ categoryId +')').forEach(element => {
                 element.style.filter = 'blur(3px)';
             });
         }
 
-        // Function to hide expense forms
+        // Function to hide expense forms and remove blur effect from other elements
         function hideExpenseForms() {
             expenseForms.forEach(form => {
                 form.style.display = 'none';
-                // Réinitialiser le filtre de flou
-                document.querySelectorAll('.flou:not(.updatebudget)').forEach(element => {
-                    element.style.filter = 'none';
-                });
+            });
+
+            // Remove blur effect from other elements
+            document.querySelectorAll('.cards > li').forEach(element => {
+                element.style.filter = 'none';
             });
         }
 
@@ -1737,16 +1749,16 @@
         expenseButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const categoryId = this.getAttribute('data-category');
-                hideExpenseForms(); // Masquer tous les formulaires avant d'afficher celui-ci
+                hideExpenseForms(); // Hide all forms before showing this one
                 showExpenseForm(categoryId);
             });
         });
 
         // Event listener for clicking outside of expense forms to hide them
         document.addEventListener('click', function(event) {
-            // Vérifier si l'élément cliqué n'est ni le bouton "Ajouter des dépenses" ni à l'intérieur du formulaire
+            // Check if the clicked element is neither the "Add Expenses" button nor inside the form
             if (!event.target.matches('.update_budget') && !event.target.closest('.updatebudget')) {
-                hideExpenseForms(); // Masquer le formulaire
+                hideExpenseForms(); // Hide the form
             }
         });
     });
