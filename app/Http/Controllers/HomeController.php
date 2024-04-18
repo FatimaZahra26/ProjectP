@@ -401,14 +401,14 @@ class HomeController extends Controller
         // Send notification to the user
         Notification::send($user, new BudgetAlert($message));
     }
-    public function updateBudget(Request $request, $id)
+    public function updateBudget(Request $request)
 {
     // Validez les données du formulaire
     $request->validate([
         'category' => 'required|numeric',
         'duration' => 'required',
     ]);
-
+    $id=$request->input('budget_id');
     // Trouvez le budget par ID
     $budget = Budget::findOrFail($id);
 
@@ -504,6 +504,51 @@ try {
     return redirect()->back()->with('error', 'An error occurred while updating the category.');
 }
 }
+public function deleteExpense($id)
+{
+    try {
+        // Trouver la dépense par son ID
+        $expense = Expense::findOrFail($id);
 
+        // Récupérer l'ID de la catégorie associée à cette dépense
+        $categoryId = $expense->category_id;
+
+        // Supprimer la dépense
+        $expense->delete();
+
+        // Mettre à jour le budget total de la catégorie correspondante
+        $totalExpenseAmount = Expense::where('category_id', $categoryId)->sum('amount');
+        $category = Tag::find($categoryId);
+        if ($category) {
+            $category->total_budget = $category->initial_budget - $totalExpenseAmount;
+            $category->save();
+        }
+
+        // Redirection avec un message de succès
+        return redirect()->back()->with('success', 'Expense deleted successfully!');
+    } catch (\Exception $e) {
+        // En cas d'erreur, rediriger avec un message d'erreur
+        return redirect()->back()->with('error', 'An error occurred while deleting the expense.');
+    }
+}
+public function updateExpense(Request $request)
+{
+try {
+    $id = $request->input('expense_id');
+    // Trouver la dépense par son ID
+    $expense = Expense::findOrFail($id);
+
+    // Mettre à jour les attributs de la dépense
+    $expense->description = $request->input('description');
+    $expense->amount = $request->input('amount');
+    $expense->save();
+
+    // Redirection avec un message de succès
+    return redirect()->back()->with('success', 'Expense updated successfully');
+} catch (\Exception $e) {
+    // En cas d'erreur, rediriger avec un message d'erreur
+    return redirect()->back()->with('error', 'An error occurred while updating the expense.');
+}
+}
     
 }
