@@ -242,12 +242,12 @@
                             placeholder="Entrer le budget" style="margin-left:0px" min="0">
 
                         <!-- <div class="input-group-ffd">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i id="food" class="fas fa-utensils"></i><label name="name">Food</label><input type="text" id="lbl2" name="amount" class="food-input" placeholder="Entrer le budget">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <div class="input-group-vetment">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i id="vetement" class="fas fa-tshirt"></i><label name="name">Vetement</label><input type="text" id="lbl3" name="amount" class="clothes-input" placeholder="Entrer le budget">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div> -->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i id="food" class="fas fa-utensils"></i><label name="name">Food</label><input type="text" id="lbl2" name="amount" class="food-input" placeholder="Entrer le budget">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="input-group-vetment">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i id="vetement" class="fas fa-tshirt"></i><label name="name">Vetement</label><input type="text" id="lbl3" name="amount" class="clothes-input" placeholder="Entrer le budget">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div> -->
                         <button type="submit" class="button-55" style="margin-left:75%">Save</button>
 
                     </form>
@@ -280,14 +280,27 @@
                                                 <button class="button-52 add-expense-button"
                                                     data-category="{{ $category->id }}" role="button">Add
                                                     Expenses</button>
+                                                <button class="update_category" data-category="{{ $category->id }}"
+                                                    role="button"><i class="fas fa-pencil-alt"></i></button>
+                                                <form action="{{ route('category.delete', $category->id) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <!-- Use the blade directive to include the DELETE method -->
+                                                    <button id="deletebtn" type="submit"><i class="fa fa-trash"
+                                                            aria-hidden="true"></i>
+                                                    </button>
+                                                </form>
                                             </span>
+
                                         </li>
                                     </div>
 
                                     <!-- Ajout du formulaire d'ajout de dépenses pour cette catégorie -->
-                                    <div id="expenseForm{{ $category->id }}" class="expenseForm" style="display: none;">
+                                    <div id="expenseForm{{ $category->id }}" class="expenseForm"
+                                        data-category="{{ $category->id }}" style="display: none;">
                                         <form action="{{ route('expenses.store') }}" method="POST"
-                                            class="popup-content" style="margin:0 auto;margin-bottom:80px;">
+                                            class="popup-content">
                                             @csrf
                                             <h1>Add Expense for {{ $category->name }}</h1>
                                             <input type="hidden" name="tag_id" value="{{ $category->id }}">
@@ -295,7 +308,26 @@
                                             <input type="text" id="description" name="description"><br><br>
                                             <label for="amount">Amount:</label><br>
                                             <input type="number" id="amount" name="amount" min="0"><br><br>
-                                            <button type="submit"class="button-55">Add Expense</button>
+                                            <button type="submit" class="button-55">Add Expense</button>
+                                        </form>
+                                    </div>
+                                    <div id="updatecategory{{ $category->id }}" class="updatecategory"
+                                        data-category="{{ $category->id }}" style="display: none;">
+
+                                        <form name="UPDATE" class="popup-content" method="POST"
+                                            action="{{ route('category.update') }}">
+                                            @csrf
+                                            <span class="close3">&times;</span>
+
+                                            <h1 id="h1">Categorie:</h1>
+                                            <input type="hidden" name="tag_id" value="{{ $category->id }}">
+
+                                            <label for="category">New Categoty :</label><br>
+                                            <input type="text" name="name"><br><br>
+                                            <label for="category">Categoty Amount:</label><br>
+                                            <input type="number" name="amount" id="lbl1" class="transport-input"
+                                                placeholder="Entrer le budget" style="margin-left:0px" min="0">
+                                            <button id="btn-a" type="submit" class="button-55">Send</button>
                                         </form>
                                     </div>
                                     <!-- Liste des dépenses pour cette catégorie -->
@@ -381,8 +413,6 @@
     </div>
 @endsection
 <style>
-   
-
     .navbar {
         display: none;
     }
@@ -411,7 +441,7 @@
             height: 50px;
             border-radius: 50%;
             margin-left: 50px;
-            margin-top:5px;
+            margin-top: 5px;
             border: 2px solid #fff;
             /* Ajout d'une bordure blanche autour de l'image de profil */
         }
@@ -433,7 +463,7 @@
 
         .navbar ul li {
             margin-right: 35px;
-            margin-top:20px;
+            margin-top: 20px;
         }
 
         .navbar ul li:last-child {
@@ -527,17 +557,15 @@
 
     /* Positionner le formulaire d'ajout de dépenses au premier plan */
     .expenseForm {
-        position: absolute;
-        width: 500px;
-
-        border-radius: 5px;
-        position: absolute;
-        top: 70%;
-        left: 30%;
-        background-color: white;
-
-        /* Modifier en fonction de votre conception */
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        /* Une valeur suffisamment élevée pour s'assurer que les formulaires sont au premier plan */
+        display: none;
+        background: #f8f9f9;
+        width: 35%;
         /* Modifier en fonction de votre conception */
     }
 
@@ -1158,6 +1186,18 @@
         margin-right: 10px;
     }
 
+    .updatecategory {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        /* Une valeur suffisamment élevée pour s'assurer que les formulaires sont au premier plan */
+        display: none;
+        background: #f8f9f9;
+        width: 35%;
+    }
+
     .budget-input {
         padding: 8px;
         border: 1px solid #ccc;
@@ -1422,7 +1462,52 @@
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{-- <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const categoryButtons = document.querySelectorAll('.update_category');
+        const categoryForms = document.querySelectorAll('.updatecategory');
 
+        // Function to show expense form in the foreground without blur
+        function showCategoryForm(categoryId) {
+            const categoryForm = document.getElementById(`updatecategory${categoryId}`);
+            categoryForm.style.display = 'block';
+            categoryForm.style.zIndex = '100';
+
+            // Appliquer le flou aux éléments autres que le formulaire d'ajout de dépenses
+            document.querySelectorAll('.flou:not(.updatecategory)').forEach(element => {
+                element.style.filter = 'blur(3px)';
+            });
+        }
+
+        // Function to hide expense forms
+        function hideCategoryForms() {
+            categoryForms.forEach(form => {
+                form.style.display = 'none';
+                // Réinitialiser le filtre de flou
+                document.querySelectorAll('.flou:not(.updatecategory)').forEach(element => {
+                    element.style.filter = 'none';
+                });
+            });
+        }
+
+        // Event listener for clicking on Add Expenses buttons
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const categoryId = this.getAttribute('data-category');
+                hideCategoryForms(); // Masquer tous les formulaires avant d'afficher celui-ci
+                showCategoryForm(categoryId);
+            });
+        });
+
+        // Event listener for clicking outside of expense forms to hide them
+        document.addEventListener('click', function(event) {
+            // Vérifier si l'élément cliqué n'est ni le bouton "Ajouter des dépenses" ni à l'intérieur du formulaire
+            if (!event.target.matches('.update_category') && !event.target.closest('.updatecategory')) {
+                hideCategoryForms(); // Masquer le formulaire
+            }
+        });
+    });
+</script> --}}
 <script>
     // Retrieve the Laravel budget data
     document.addEventListener('DOMContentLoaded', function() {
@@ -1813,7 +1898,7 @@
         });
     });
 </script> --}}
-<script>
+{{-- <script>
     document.addEventListener('DOMContentLoaded', function() {
         const expenseButtons = document.querySelectorAll('.add-expense-button');
         const expenseForms = document.querySelectorAll('.expenseForm');
@@ -1858,7 +1943,120 @@
             }
         });
     });
+</script> --}}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const expenseButtons = document.querySelectorAll('.add-expense-button');
+        const expenseForms = document.querySelectorAll('.expenseForm');
+        const categoryButtons = document.querySelectorAll('.update_category');
+        const categoryForms = document.querySelectorAll('.updatecategory');
+
+        // Function to show expense form
+        function showExpenseForm(categoryId) {
+            console.log("categoryId:", categoryId); // Vérifiez la valeur de categoryId
+
+            const expenseForms = document.querySelectorAll(
+                '.expenseForm'); // Sélectionnez tous les formulaires avec la classe 'expenseForm'
+
+            expenseForms.forEach(form => {
+                const formCategoryId = form.getAttribute('data-category');
+                console.log("form.getAttribute('data-category'):",
+                    formCategoryId); // Vérifiez la valeur de formCategoryId
+
+                if (formCategoryId !== null && formCategoryId === categoryId) {
+                    form.style.display = 'block';
+                    form.style.zIndex = '100';
+                } else {
+                    form.style.display = 'none';
+                }
+            });
+            document.querySelectorAll('.flou:not(.expenseForm)').forEach(element => {
+                element.style.filter = 'blur(3px)';
+            });
+        }
+
+
+
+
+
+        // Function to hide expense forms
+        function hideExpenseForms() {
+            expenseForms.forEach(form => {
+                form.style.display = 'none';
+            });
+
+            // Reset blur filter
+            document.querySelectorAll('.flou:not(.expenseForm)').forEach(element => {
+                element.style.filter = 'none';
+            });
+        }
+
+        // Function to show category form
+        function showCategoryForm(desiredCategoryId) {
+
+            categoryForms.forEach(form => {
+                const categoryId = form.getAttribute('data-category');
+                if (categoryId === desiredCategoryId) {
+                    console.log(categoryId);
+                    form.style.display = 'block';
+                    form.style.zIndex = '100';
+                } else {
+                    form.style.display = 'none';
+                }
+            });
+
+            // Apply blur to elements other than the category form
+            document.querySelectorAll('.flou:not(.updatecategory)').forEach(element => {
+                element.style.filter = 'blur(3px)';
+            });
+        }
+
+        // Function to hide category forms
+        function hideCategoryForms() {
+            categoryForms.forEach(form => {
+                form.style.display = 'none';
+            });
+
+            // Reset blur filter
+            document.querySelectorAll('.flou:not(.updatecategory)').forEach(element => {
+                element.style.filter = 'none';
+            });
+        }
+
+        // Event listener for clicking on Add Expenses buttons
+        expenseButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.stopPropagation(); // Empêche la propagation de l'événement
+                const categoryId = this.getAttribute('data-category');
+                hideCategoryForms(); // Hide category forms
+                showExpenseForm(categoryId); // Show expense form
+            });
+        });
+
+        // Event listener for clicking on Update buttons
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const categoryId = this.getAttribute('data-category');
+                console.log('categoryId:',
+                    categoryId); // Vérifiez si categoryId est correctement récupéré
+                hideExpenseForms(); // Hide expense forms
+                showCategoryForm(categoryId); // Show category form
+            });
+        });
+
+        // Event listener for clicking outside of forms to hide them
+        document.addEventListener('click', function(event) {
+            if (!event.target.matches('.add-expense-button') && !event.target.matches(
+                    '.update_category') && !event.target.closest('.expenseForm') && !event.target
+                .closest('.updatecategory')) {
+                hideExpenseForms();
+                hideCategoryForms();
+            }
+        });
+    });
 </script>
+
 
 
 

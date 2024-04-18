@@ -433,6 +433,77 @@ public function deleteBudget($id)
     // Redirigez avec un message de succès
     return redirect()->back()->with('success', 'Budget deleted successfully');
 }
+public function deleteCategory($id)
+{
+    try {
+        // Find the category by its ID
+        $category = Tag::findOrFail($id);
+
+        // Get the user ID associated with this category
+        $userId = $category->user_id;
+
+        // Delete the category
+        $category->delete();
+
+        // Recalculate the total remaining budget
+        $totalCategoryAmount = Tag::where('user_id', $userId)->sum('amount');
+        $budget = Budget::where('user_id', $userId)->first();
+        if ($budget) {
+            $budget->total_budget = $budget->budget_initial - $totalCategoryAmount;
+            $budget->save();
+        }
+
+        // Redirect with a success message
+        return redirect()->back()->with('success', 'Category deleted successfully!');
+    } catch (\Exception $e) {
+        // In case of error, redirect with an error message
+        return redirect()->back()->with('error', 'An error occurred while deleting the category.');
+    }
+}
+
+
+public function updateCategory(Request $request)
+{
+// Valider les données du formulaire
+$validatedData = $request->validate([
+    'name' => 'required|string|max:255',
+    'amount' => 'required|numeric|min:0',
+]);
+
+try {
     
+    $id = $request->input('tag_id');
+    // Trouver la catégorie à mettre à jour
+    $category = Tag::findOrFail($id);
+
+    // Sauvegarder l'ancien montant de la catégorie
+    $oldAmount = $category->amount;
+
+    // Mettre à jour les attributs de la catégorie
+    $category->name = $validatedData['name'];
+    $category->amount = $validatedData['amount'];
+    $category->save();
+
+    // Calculer la différence entre l'ancien montant et le nouveau montant
+    $difference = $validatedData['amount'] - $oldAmount;
+
+    // Mettre à jour le montant total du budget restant
+    $userId = $category->user_id;
+    $totalCategoryAmount = Tag::where('user_id', $userId)->sum('amount');
+    $budget = Budget::where('user_id', $userId)->first();
+    if ($budget) {
+        // Mettre à jour le montant total du budget restant en tenant compte de la différence
+        $budget->total_budget = $budget->budget_initial - $totalCategoryAmount;
+        $budget->save();
+    }
+
+    // Rediriger vers une page appropriée après la mise à jour
+    return redirect()->back()->with('success', 'Category updated successfully');
+} catch (\Exception $e) {
+    // En cas d'erreur, rediriger avec un message d'erreur
+    return redirect()->back()->with('error', 'An error occurred while updating the category.');
+}
+}
+
     
 }

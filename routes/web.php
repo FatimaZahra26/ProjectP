@@ -31,6 +31,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/get-category-expenses', [HomeController::class, 'getCategoryExpenses'])->name('get-category-expenses');
     Route::post('/budgets/update/{id}', [HomeController::class, 'updateBudget'])->name('budgets.update');
     Route::delete('/budgets/delete/{id}', [HomeController::class, 'deleteBudget'])->name('budgets.delete');
+    Route::post('/Category/update', [HomeController::class, 'updateCategory'])->name('category.update');
+    Route::delete('/Category/delete/{id}', [HomeController::class, 'deleteCategory'])->name('category.delete');
        
 });
 // Routes pour la gestion du profil de l'utilisateur connecté
