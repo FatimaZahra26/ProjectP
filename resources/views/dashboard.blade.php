@@ -446,7 +446,7 @@
                                     <div class="expense-item" style="margin-top:50px;display:flex;flex-direction:row;margin-left:-10%">
                                         <div class="description">{{ $expense->description }}</div>
                                         <div class="amount">${{ $expense->amount }}</div>
-                                     <div style="margin-left: 20%;display:flex">
+                                     <div style="margin-left: 10%;display:flex">
 
                                         <form action="{{ route('expenses.delete', $expense->id) }}" method="POST">
                                             @csrf
@@ -1955,6 +1955,7 @@
     });
     document.addEventListener('DOMContentLoaded', function() {
         // Masquer les autres sections sauf la section "Home"
+        document.getElementById('expenses').style.display = 'none';
         document.getElementById('categories').style.display = 'none';
         document.getElementById('budgetPieChart').style.display = 'none';
         document.getElementById('dashboard').style.display = 'none';
@@ -1962,7 +1963,7 @@
         // Afficher la section "Home"
         document.getElementById('home').style.display = 'block';
         document.getElementById('ExpenseList').style.display = 'none';
-        document.getElementById('expenses').style.display = 'none';
+       
     });
 
     /**/
