@@ -14,6 +14,7 @@ use App\Notifications\BudgetAlert;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\Hash;
 
@@ -216,7 +217,7 @@ class HomeController extends Controller
         $user = Auth::user();
 
         // Check if there is already a budget of the same type for the same period
-        $existingBudget = Budget::where('user_id', $user->id)
+       /* $existingBudget = Budget::where('user_id', $user->id)
             ->where('budget_type', $request->input('duration'))
             ->where('created_at', '>=', now()->startOfWeek()) // Adjust this condition based on your duration (week or month)
             ->where('created_at', '<=', now()->endOfWeek()) // Adjust this condition based on your duration (week or month)
@@ -226,13 +227,15 @@ class HomeController extends Controller
             // If a budget of the same type for the same period already exists, redirect back with an error message
             return redirect()->back()->withErrors(['error' => 'You have already set a budget of the same type for this period.']);
         }
-
+*/
         // Create a new budget
         $budget = new Budget();
         $budget->user_id = $user->id;
         $budget->total_budget = $request->input('category');
         $budget->budget_initial = $request->input('category');
         $budget->budget_type = $request->input('duration');
+        $budget->description = $request->input('description');
+
         $budget->save();
         // Redirect with a success message
         return redirect()->back()->with('success', 'Budget saved successfully.');
@@ -242,47 +245,53 @@ class HomeController extends Controller
         try {
             // Get the authenticated user
             $user = Auth::user();
-
-            // Check if the total amount of categories exceeds the initial budget
+    
+            // Get the submitted data from the request
+            $name = $request->input('name');
+            $amount = $request->input('amount');
+            $budgetId = $request->input('budget_id');
+    
+            // Get the total amount spent on categories
             $totalCategoryAmount = Tag::where('user_id', $user->id)->sum('amount');
-
-            // Get the initial budget
-            $initialBudget = Budget::where('user_id', $user->id)->sum('budget_initial');
-
-            // Check if adding the new category would exceed the initial budget
-            $proposedTotalAmount = $totalCategoryAmount + $request->input('amount');
-            if ($proposedTotalAmount > $initialBudget) {
-                // Redirect back with an error message
-                return redirect()->back()->withErrors(['error' => 'Cannot save category. Exceeds initial budget.']);
+    
+            // Get the budget associated with the category
+            $budget = Budget::findOrFail($budgetId);
+    
+            // Calculate the remaining budget after adding the new category amount
+            $remainingBudget = $budget->budget_initial - $totalCategoryAmount;
+    
+            // Check if the new category amount exceeds the remaining budget
+            if ($amount > $remainingBudget) {
+                return redirect()->back()->withErrors(['error' => 'Category amount exceeds remaining budget.']);
             }
-
+    
             // Create a new category
             $category = new Tag();
-            $category->name = $request->input('name');
-            $category->amount = $request->input('amount');
+            $category->name = $name;
+            $category->amount = $amount;
             $category->user_id = $user->id;
-
-            // Fetch the budget for the authenticated user
-            $budget = Budget::where('user_id', $user->id)->first();
-
-            // Check if budget exists
-            if ($budget) {
-                $category->budget_id = $budget->id;
-                $category->save();
-
-                // Recalculate the total remaining budget
-                $totalCategoryAmount = Tag::where('user_id', $user->id)->sum('amount');
-                $budget->total_budget = $budget->budget_initial - $totalCategoryAmount;
-                $budget->save();
-
-                return redirect()->back()->with('success', 'Catégorie enregistrée avec succès');
-            } else {
-                return redirect()->back()->with('error', 'Aucun budget trouvé pour cet utilisateur');
-            }
+            $category->budget_id = $budgetId;
+    
+            // Save the category to the database
+            $category->save();
+    
+            // Update the total category amount for the budget
+            $totalCategoryAmount = Tag::where('user_id', $user->id)->sum('amount');
+            $budget->total_budget = $budget->budget_initial - $totalCategoryAmount;
+            $budget->save();
+    
+            return redirect()->back()->with('success', 'Category saved successfully');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Une erreur s\'est produite lors de l\'enregistrement de la catégorie');
+            // Log the error
+            Log::error('Error while saving category: ' . $e->getMessage());
+    
+            return redirect()->back()->with('error', 'An error occurred while saving the category');
         }
     }
+    
+    
+    
+    
 
     public function updateProfile(Request $request)
     {

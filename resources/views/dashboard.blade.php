@@ -117,7 +117,7 @@
 </div>
 
 @section('content')
-    <div class="container-fluid" style="margin-top:50px;">
+    <div class="container-fluid" style="margin-top:30px;">
         <div class="row">
             <div class="home" id="home">
 
@@ -135,17 +135,20 @@
                     @endif
 
                 </div>
-                <ul class="cards">
+                <ul class="cards" class="flou">
                     @foreach ($budgets as $budget)
                         <li>
                             <img src="{{ asset('assets/dol.jpg') }}" alt="" class="dol"
-                                style="width: 50px;border-radius:50%">
-                            <span class="info">
+                                style="width: 50px;border-radius:50%;margin-top:-20%">
+                            <span class="info" style="margin-top:-20%">
                                 <h3><span>$</span><span class="budget_card">{{ $budget->budget_initial }}</span></h3>
-                                <p>Budget</p>
+                                <p>Budget: {{$budget->description }}</p>
                             </span>
-                            <div
-                                style="margin-top:100px;display:flex; padding-top:30px;flex-direction:row;margin-left:-10%">
+
+
+                            <div class="button_section"
+                                style="margin-top:100px;display:flex; padding-top:30px;flex-direction:row;margin-left:-30%">
+                                <button class="add-category-button" data-budget="{{ $budget->id }}">Add Category</button>
                                 <button class="update_budget" data-category="{{ $budget->id }}">
 
                                     <svg fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
@@ -195,13 +198,32 @@
                                 <input type="hidden" name="budget_id" value="{{ $budget->id }}">
 
                                 <label for="category">New budget:</label><br>
-                                <input type="number" id="category" name="category" min="0"><br><br>
+                                <input type="number" id="category" name="category" min="0" value="{{ $budget->budget_initial}}"><br><br>
                                 <label for="duration">duration:</label><br>
-                                <select id="duration" name="duration" style="width:400px">
+                                <select id="duration" name="duration" value="{{ $budget->duration}}" style="width:380px">
                                     <option value="week">Weekly</option>
                                     <option value="month">Montly</option>
                                 </select><br><br>
                                 <button id="btn-a" type="submit" class="button-55">Send</button>
+                            </form>
+                        </div>
+                        <div id="categoryForm{{ $budget->id }}" class="categoryForm"
+                            data-category="{{ $budget->id }}" style="display: none;">
+                            <form name="ADD" class="popup-content" method="POST"
+                                action="{{ route('save-categorie') }}">
+                                @csrf
+
+                                <h1 id="h1">Add Category for Budget: {{ $budget->description     }}</h1>
+                                <input type="hidden" name="budget_id" value="{{ $budget->id }}">
+
+                                <label for="newCategory">New Category:</label><br>
+                                <input type="text" name="name"><br><br>
+
+                                <label for="categoryAmount">Category Amount:</label><br>
+                                <input type="number" name="amount" id="lbl1" class="transport-input"
+                                    placeholder="Enter the budget" style="margin-left:0px;width:380px" min="0">
+
+                                <button id="btn-a" type="submit" class="button-55">Add Category</button>
                             </form>
                         </div>
                         <li>
@@ -215,9 +237,8 @@
                     @endforeach
                 </ul>
 
-                <div style="display: flex;margin-left:60%;">
+                <div style="display: flex;margin-left:80%;" id="addB">
                     <button class="button-86" id="openForm">Add Budget</button>
-                    <button class="button-87" id="openCategory">Add category</button>
                 </div>
                 <div id="popupForm1" class="popup">
                     <form name="cc" class="popup-content" method="POST" action="{{ route('save-budget') }}"
@@ -233,6 +254,8 @@
                             <option value="week">Weekly</option>
                             <option value="month">Monthly</option>
                         </select><br><br>
+                        <label for="description">Budget description:</label><br>
+                        <input type="text" id="category" name="description" pattern="[a-z A-Z]{3,6}"><br><br>
                         <button id="btn-a" type="submit" class="button-55">Send</button>
                     </form>
                 </div>
@@ -260,23 +283,8 @@
                         </script>
                     @endif
                 </div>
-                <div id="popupForm2" class="popup">
-                    <form method="POST" class="popup-content" action="{{ route('save-categorie') }}"
-                        style="margin:0 auto;">
-                        @csrf
-                        <span class="close2">&times;</span>
-
-                        <h1 id="h1">Categorie:</h1>
-
-                        <label for="category">Categoty name:</label><br>
-                        <input type="text" name="name"><br><br>
-                        <label for="category">Categoty Amount:</label><br>
-                        <input type="number" name="amount" id="lbl1" class="transport-input"
-                            placeholder="Entrer le budget" style="margin-left:0px" min="0">
-                        <button type="submit" class="button-55">Send</button>
 
 
-                </div>
 
 
 
@@ -299,7 +307,7 @@
                         <ul class="pair" style="width: 40%;padding-left:0px;padding-right:50px;">
                             @foreach ($pair as $category)
                                 <div class="flou">
-                                    <li style="width: 100%;">
+                                    <li style="width: 100%;" class="categorycard">
                                         <img src="{{ asset('assets/cate.jpg') }}" alt="" class="dol"
                                             style="width: 50px;border-radius:30%">
                                         <span class="info">
@@ -376,16 +384,16 @@
                                     <form name="UPDATE" class="popup-content" method="POST"
                                         action="{{ route('category.update') }}">
                                         @csrf
-                                        <span class="close3">&times;</span>
+                                        
 
                                         <h1 id="h1">Categorie:</h1>
                                         <input type="hidden" name="tag_id" value="{{ $category->id }}">
 
                                         <label for="category">New Categoty :</label><br>
-                                        <input type="text" name="name"><br><br>
+                                        <input type="text" name="name" value="{{ $category->name}}"><br><br>
                                         <label for="category">Categoty Amount:</label><br>
                                         <input type="number" name="amount" id="lbl1" class="transport-input"
-                                            placeholder="Entrer le budget" style="margin-left:0px" min="0">
+                                            placeholder="Entrer le budget" style="margin-left:0px" value="{{ $category->amount}}" min="0">
                                         <button id="btn-a" type="submit" class="button-55">Send</button>
                                     </form>
                                 </div>
@@ -435,38 +443,44 @@
                     </form>
                 </div>
             </div>
-            <div id="expenses">
+            <div id="expenses" >
                 <h1 style="color: #0056b3">Your Expenses List:</h1>
-                <div id="ExpenseList" style="margin-top: 50px;">
+                <div id="ExpenseList" style="margin-top: 50px;" class="flou">
                     @foreach ($categories as $category)
-                        <div class="card" style="background: #f8c263">
+                        <div class="card" style="background: #f8c263" id="expenseL">
                             <div class="card-header">{{ $category->name }}</div>
                             <div class="card-body">
                                 @foreach ($expensesByCategory[$category->id] as $expense)
-                                    <div class="expense-item" style="margin-top:50px;display:flex;flex-direction:row;margin-left:-10%">
+                                    <div class="expense-item" style="margin-top:50px;display:flex;flex-direction:row;">
                                         <div class="description">{{ $expense->description }}</div>
                                         <div class="amount">${{ $expense->amount }}</div>
-                                     <div style="margin-left: 10%;display:flex">
+                                        <div style="margin-left: 10%;display:flex">
 
-                                        <form action="{{ route('expenses.delete', $expense->id) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" style="background: red; width: 50px; height: 30px; border: none; cursor: pointer; padding: 5px;">delete</button>
-                                        </form>
-                                        <button class="update_btn" data-expense="{{ $expense->id }}" style="background: rgb(3, 202, 39); width: 50px; height: 30px; border: none; cursor: pointer; padding: 5px;margin-left:5px">update</button>
+                                            <form action="{{ route('expenses.delete', $expense->id) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    style="background: red; width: 50px; height: 30px; border: none; cursor: pointer; padding: 5px;">delete</button>
+                                            </form>
+                                            <button class="update_btn" data-expense="{{ $expense->id }}"
+                                                style="background: rgb(3, 202, 39); width: 50px; height: 30px; border: none; cursor: pointer; padding: 5px;margin-left:5px">update</button>
+                                        </div>
                                     </div>
-                                </div>
-                                    <div id="updateexpense{{ $expense->id }}" class="updateexpense" style="display: none;">
-                                        <form name="UPDATE" class="popup-content" method="POST" action="{{ route('expenses.update') }}">
+                                    <div id="updateexpense{{ $expense->id }}" class="updateexpense"
+                                        style="display: none;">
+                                        <form name="UPDATE" class="popup-content" method="POST"
+                                            action="{{ route('expenses.update') }}">
                                             @csrf
                                             @method('POST')
                                             <!-- Add fields for updating the expense -->
-                                            <span class="close2">&times;</span>
+                              
                                             <label for="description">Description:</label><br>
                                             <input type="hidden" name="expense_id" value="{{ $expense->id }}">
-                                            <input type="text" id="description" name="description" value="{{ $expense->description }}"><br><br>
+                                            <input type="text" id="description" name="description"
+                                                value="{{ $expense->description }}"><br><br>
                                             <label for="amount">Amount:</label><br>
-                                            <input type="number" id="amount" name="amount" value="{{ $expense->amount }}" min="0"><br><br>
+                                            <input type="number" id="amount" name="amount"
+                                                value="{{ $expense->amount }}" min="0"><br><br>
                                             <button type="submit">Update Expense</button>
                                         </form>
                                     </div>
@@ -476,8 +490,8 @@
                     @endforeach
                 </div>
             </div>
-            
-            
+
+
             <div id="dashboard">
                 <div style="width: 350px; height: 33n0px;">
                     <h1 style="color: #0056b3">Your Dashboard:</h1>
@@ -497,6 +511,29 @@
 @endsection
 <style>
     /**/
+    .add-category-button {
+        background-color: #c2fbd7;
+        border-radius: 100px;
+        box-shadow: rgba(44, 187, 99, .2) 0 -25px 18px -14px inset, rgba(44, 187, 99, .15) 0 1px 2px, rgba(44, 187, 99, .15) 0 2px 4px, rgba(44, 187, 99, .15) 0 4px 8px, rgba(44, 187, 99, .15) 0 8px 16px, rgba(44, 187, 99, .15) 0 16px 32px;
+        color: green;
+        cursor: pointer;
+        display: inline-block;
+        font-family: CerebriSans-Regular, -apple-system, system-ui, Roboto, sans-serif;
+        padding: 7px 20px;
+        text-align: center;
+        text-decoration: none;
+        transition: all 250ms;
+        border: 0;
+        font-size: 16px;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+    }
+
+    .add-category-button:hover {
+        box-shadow: rgba(44, 187, 99, .35) 0 -25px 18px -14px inset, rgba(44, 187, 99, .25) 0 1px 2px, rgba(44, 187, 99, .25) 0 2px 4px, rgba(44, 187, 99, .25) 0 4px 8px, rgba(44, 187, 99, .25) 0 8px 16px, rgba(44, 187, 99, .25) 0 16px 32px;
+        transform: scale(1.05) rotate(-1deg);
+    }
 
     .navbar {
         display: none;
@@ -567,12 +604,78 @@
             color: #19B3D3;
         }
 
+        .card {
+            width: 20%;
+        }
+
+
+
+        #dashboard {
+            width: 50px;
+        }
+
+        .row {
+            margin-top: 100px;
+        }
+
+        .flou {
+            width: 300px;
+            margin-left: -20%;
+        }
+
+        .categorycard {
+            width: 50%;
+        }
+
+        .categoryForm {
+            width: 1000px;
+        }
+
+        form.popup-content {
+            width: 500px;
+        }
+
+        .cards {
+            width: 100%;
+            margin-left: -35px;
+        }
+
+        #expenseL {
+            width: 500px;
+            /* margin-left: 100px; */
+            margin-left: 80%;
+        }
+
+        div.expense-item {
+            margin-left: 0.25px;
+            margin-right: 100px;
+            width: 100%;
+        }
+
+        #dashboard {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        #dashboard h1 {
+            margin-left: 0px;
+        }
+
+        #openForm {
+            margin-left:-80px;
+            
+        }
+        #addB{
+            margin-top: -50px;
+        }
+
     }
 
     /**/
     .update_budget,
     .update_category {
-        margin-left: 40px;
+        margin-left: 5px;
         width: 30px;
         height: 30px;
         margin-right: 5px;
@@ -687,7 +790,7 @@
         padding: 10px;
         border: 1px solid #e0e0e0;
         border-radius: 5px;
-
+        margin-left: -10%;
     }
 
     .expense-item .description {
@@ -868,6 +971,8 @@
         .button-52 {
             padding: 13px 50px 13px;
         }
+
+
     }
 
     .card-container {
@@ -1274,8 +1379,8 @@
         margin-right: 10px;
     }
 
-    .updatecategory {
-       position: fixed;
+    .updatecategory,.updateexpense {
+        position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
@@ -1609,8 +1714,10 @@
         opacity: 0;
         transition: .3s;
     }
-    .updatebudget{
-    position: fixed;
+
+    .updatebudget,
+    .categoryForm {
+        position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
@@ -1619,10 +1726,61 @@
         display: none;
         background: #f8f9f9;
         width: 35%;
-}
+    }
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addCategoryButtons = document.querySelectorAll('.add-category-button');
+        const categoryForms = document.querySelectorAll('.categoryForm');
+
+        // Function to show category form and apply blur effect to other elements
+        function showCategoryForm(budgetId) {
+            // Loop through category forms to find the one associated with the budgetId
+            categoryForms.forEach(form => {
+                const formBudgetId = form.getAttribute('data-category');
+                if (formBudgetId === budgetId) {
+                    form.style.display = 'block';
+                    form.style.zIndex = '100';
+
+                    // Apply blur effect to other elements
+                    document.querySelectorAll('.cards > li:not(.categoryForm)').forEach(element => {
+                        element.style.filter = 'blur(3px)';
+                    });
+                } else {
+                    form.style.display = 'none';
+                }
+            });
+        }
+
+        // Event listener for clicking on Add Category buttons
+        addCategoryButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const budgetId = this.getAttribute('data-budget');
+                showCategoryForm(budgetId);
+            });
+        });
+
+        // Event listener for clicking outside of category forms to hide them
+        document.addEventListener('click', function(event) {
+            if (!event.target.matches('.add-category-button') && !event.target.closest(
+                    '.categoryForm')) {
+                // Hide all category forms
+                categoryForms.forEach(form => {
+                    form.style.display = 'none';
+                });
+
+                // Remove blur effect from other elements
+                document.querySelectorAll('.cards > li').forEach(element => {
+                    element.style.filter = 'none';
+                });
+            }
+        });
+    });
+</script>
+
+
 {{-- <script>
     document.addEventListener('DOMContentLoaded', function() {
         const categoryButtons = document.querySelectorAll('.update_category');
@@ -1728,7 +1886,7 @@
             expenseForm.style.zIndex = '100';
 
             // Apply blur effect to other elements
-            document.querySelectorAll('.cards > li:not(#updatebudget'+ categoryId +')').forEach(element => {
+            document.querySelectorAll('.cards > li:not(#updatebudget' + categoryId + ')').forEach(element => {
                 element.style.filter = 'blur(3px)';
             });
         }
@@ -1975,7 +2133,7 @@
         // Afficher la section "Home"
         document.getElementById('home').style.display = 'block';
         document.getElementById('ExpenseList').style.display = 'none';
-       
+
     });
 
     /**/
@@ -2144,7 +2302,7 @@
             expenseForms.forEach(form => {
                 const formCategoryId = form.getAttribute('data-category');
                 console.log("form.getAttribute('data-category'):",
-                formCategoryId); // Verify the value of formCategoryId
+                    formCategoryId); // Verify the value of formCategoryId
 
                 if (formCategoryId !== null && formCategoryId === categoryId) {
                     form.style.display = 'block';
@@ -2223,7 +2381,7 @@
             button.addEventListener('click', function() {
                 const categoryId = this.getAttribute('data-category');
                 console.log('categoryId:',
-                categoryId); // Check if categoryId is correctly retrieved
+                    categoryId); // Check if categoryId is correctly retrieved
                 hideExpenseForms(); // Hide expense forms
                 showCategoryForm(categoryId); // Show category form
             });

@@ -1,0 +1,1191 @@
+.add-category-button {
+    background-color: #c2fbd7;
+    border-radius: 100px;
+    box-shadow: rgba(44, 187, 99, .2) 0 -25px 18px -14px inset, rgba(44, 187, 99, .15) 0 1px 2px, rgba(44, 187, 99, .15) 0 2px 4px, rgba(44, 187, 99, .15) 0 4px 8px, rgba(44, 187, 99, .15) 0 8px 16px, rgba(44, 187, 99, .15) 0 16px 32px;
+    color: green;
+    cursor: pointer;
+    display: inline-block;
+    font-family: CerebriSans-Regular, -apple-system, system-ui, Roboto, sans-serif;
+    padding: 7px 20px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 250ms;
+    border: 0;
+    font-size: 16px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+.add-category-button:hover {
+    box-shadow: rgba(44, 187, 99, .35) 0 -25px 18px -14px inset, rgba(44, 187, 99, .25) 0 1px 2px, rgba(44, 187, 99, .25) 0 2px 4px, rgba(44, 187, 99, .25) 0 4px 8px, rgba(44, 187, 99, .25) 0 8px 16px, rgba(44, 187, 99, .25) 0 16px 32px;
+    transform: scale(1.05) rotate(-1deg);
+}
+
+.navbar {
+    display: none;
+}
+
+@media screen and (max-width: 780px) {
+    .sidebar {
+        display: none;
+    }
+    .navbar {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #75cdf3;
+        padding: 15px 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+    .navbar .profile-info {}
+    .navbar .profile-info img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-left: 50px;
+        margin-top: 5px;
+        border: 2px solid #fff;
+        /* Ajout d'une bordure blanche autour de l'image de profil */
+    }
+    .navbar .profile-info h2 {
+        color: #fff;
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+    }
+    .navbar ul {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        margin-left: 20px;
+    }
+    .navbar ul li {
+        margin-right: 35px;
+        margin-top: 20px;
+    }
+    .navbar ul li:last-child {
+        margin-right: 0;
+    }
+    .navbar ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 18px;
+        transition: color 0.3s ease;
+        /* Ajout d'une transition pour la couleur du texte au survol */
+    }
+    .navbar ul li a:hover {
+        color: #19B3D3;
+    }
+    .card {
+        width: 20%;
+    }
+    #dashboard {
+        width: 50px;
+    }
+    .row {
+        margin-top: 100px;
+    }
+    .flou {
+        width: 300px;
+        margin-left: -20%;
+    }
+    .categorycard {
+        width: 50%;
+    }
+    .categoryForm {
+        width: 1000px;
+    }
+    form.popup-content {
+        width: 500px;
+    }
+    .cards {
+        width: 100%;
+        margin-left: -35px;
+    }
+    #expenseL {
+        width: 500px;
+    }
+    div.expense-item {
+        margin-left: 3%;
+    }
+    #dashboard {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    #dashboard h1 {
+        margin-left: 0px;
+    }
+    #openForm {
+        margin-left: -80px;
+    }
+    #addB {
+        margin-top: -50px;
+    }
+}
+
+
+/**/
+
+.update_budget,
+.update_category {
+    margin-left: 5px;
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
+}
+
+#deletebtn,
+.update_budget,
+.update_category {
+    width: 30px;
+    height: 30px;
+}
+
+#dashboard {
+    display: flex;
+}
+
+.chart-container {
+    width: 50%;
+    padding: 20px;
+}
+
+#dashboard h1 {
+    margin-left: 50%;
+    width: 100%;
+}
+
+.weather {
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-image: "url('{{ asset('assets/background1.jpg') }}')";
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 20px;
+}
+
+.weather h4 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.weather p {
+    font-size: 20px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.weather p:last-child {
+    margin-bottom: 0;
+    /* Supprime la marge en bas du dernier paragraphe */
+}
+
+.weather p::before {
+    content: "\2022";
+    /* Utilise un point comme bullet */
+    display: inline-block;
+    width: 10px;
+    margin-right: 8px;
+}
+
+.weather p.empty {
+    font-style: italic;
+    color: #999;
+}
+
+
+/* Positionner le formulaire d'ajout de dépenses au premier plan */
+
+.expenseForm {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    /* Une valeur suffisamment élevée pour s'assurer que les formulaires sont au premier plan */
+    display: none;
+    background: #f8f9f9;
+    width: 35%;
+    /* Modifier en fonction de votre conception */
+}
+
+
+/**/
+
+#ExpenseList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.card-header {
+    padding: 10px;
+    font-weight: bold;
+    background-color: #f0f0f0;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.card-body {
+    padding: 10px;
+    background: transparent;
+}
+
+.expense-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    margin-left: -10%;
+}
+
+.expense-item .description {
+    font-weight: bold;
+}
+
+.expense-item .amount {
+    color: #555;
+    font-size: 0.9em;
+    font-weight: 700
+}
+
+
+/**/
+
+
+/* Styles pour le popup */
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Fond semi-transparent */
+    z-index: 9999;
+    /* Assure que le popup apparaît au-dessus de tout */
+    margin-bottom: 500px;
+}
+
+.popup-content {
+    background-color: #fff;
+    width: 300px;
+    padding: 20px;
+    border-radius: 5px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.close,
+.close3 {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+
+/*profile css*/
+
+.profile-container {
+    max-width: 400px;
+    height: 600px;
+    ;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    background-color: #04317A;
+    /* Couleur de fond légèrement plus claire */
+}
+
+.profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: block;
+    border: 4px solid #fff;
+    /* Ajout d'une bordure blanche */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    /* Ombre légère pour l'image */
+}
+
+.profile-info {
+    text-align: center;
+    color: white;
+    /* Couleur du texte */
+}
+
+.profile-info p {
+    margin-bottom: 15px;
+    /* Espacement légèrement augmenté */
+    font-size: 16px;
+    /* Taille de police légèrement augmentée */
+}
+
+.form-group {
+    margin-bottom: 20px;
+    /* Espacement plus important entre les groupes de formulaire */
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    /* Espacement entre les libellés et les champs de formulaire */
+    font-weight: bold;
+    /* Texte en gras */
+    color: white;
+    /* Couleur bleue pour les libellés */
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"] {
+    width: 100%;
+    padding: 12px;
+    /* Rembourrage légèrement augmenté */
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    /* Bordure légèrement plus claire */
+    transition: border-color 0.3s;
+    /* Transition en douceur pour le changement de couleur de la bordure */
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus {
+    border-color: #007bff;
+    /* Couleur de la bordure au focus */
+    outline: none;
+    /* Supprime la bordure de mise au point par défaut */
+}
+
+.form-group input[type="submit"] {
+    background-color: #007bff;
+    border: none;
+    padding: 12px 24px;
+    /* Rembourrage légèrement augmenté */
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    /* Taille de police légèrement augmentée */
+    transition: background-color 0.3s;
+    /* Transition en douceur pour le changement de couleur de fond */
+    color: blue;
+    cursor: pointer;
+}
+
+.form-group input[type="submit"]:hover {
+    background-color: white;
+    /* Couleur de fond au survol */
+}
+
+
+/*end*/
+
+.button-52 {
+    font-size: 14px;
+    font-weight: 200;
+    letter-spacing: 1px;
+    padding: 13px 20px 13px;
+    outline: 0;
+    border: 1px solid black;
+    cursor: pointer;
+    position: relative;
+    background-color: rgba(0, 0, 0, 0);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    width: 80%;
+    margin-left: 40px;
+}
+
+.button-52:after {
+    content: "";
+    background-color: #ffe54c;
+    width: 100%;
+    z-index: -1;
+    position: absolute;
+    height: 100%;
+    top: 7px;
+    left: 7px;
+    transition: 0.2s;
+}
+
+.button-52:hover:after {
+    top: 0px;
+    left: 0px;
+}
+
+@media (min-width: 768px) {
+    .button-52 {
+        padding: 13px 50px 13px;
+    }
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+
+/**/
+
+.close,
+.close2,
+.close3 {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close2:hover,
+.close:focus,
+.close2:focus,
+.close3:hover,
+.close3:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.popup-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.button-86,
+.button-87 {
+    all: unset;
+    width: 100px;
+    height: 30px;
+    font-size: 16px;
+    background: transparent;
+    border: none;
+    position: relative;
+    color: #f0f0f0;
+    cursor: pointer;
+    z-index: 1;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    margin-right: 20px;
+}
+
+.button-86::after,
+.button-87::after,
+.button-86::before,
+.button-87::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: -99999;
+    transition: all .4s;
+}
+
+.button-86::before {
+    transform: translate(0%, 0%);
+    width: 100%;
+    height: 100%;
+    background: #1a4491;
+    border-radius: 10px;
+}
+
+.button-87::before {
+    transform: translate(0%, 0%);
+    width: 100%;
+    height: 100%;
+    background: #f78504;
+    border-radius: 10px;
+}
+
+.button-86::after,
+.button-87::after {
+    transform: translate(10px, 10px);
+    width: 35px;
+    height: 35px;
+    background: #ffffff15;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border-radius: 50px;
+}
+
+.button-86:hover::before,
+.button-87:hover::before {
+    transform: translate(5%, 20%);
+    width: 110%;
+    height: 110%;
+}
+
+.button-86:hover::after,
+.button-87:hover::after {
+    border-radius: 10px;
+    transform: translate(0, 0);
+    width: 100%;
+    height: 100%;
+}
+
+.button-86:active::after,
+.button-87:active::after {
+    transition: 0s;
+    transform: translate(0, 5%);
+}
+
+
+/**/
+
+.card {
+    background-color: #cfe2f3;
+    /* Blue clair */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: calc(33.33% - 20px);
+    /* Pour afficher 3 cartes par ligne */
+    padding: 30px;
+    /* Augmentation de la taille de la carte */
+}
+
+.card h3 {
+    margin-top: 0;
+}
+
+.card button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.card button:hover {
+    background-color: #0056b3;
+}
+
+
+/*--------------------------------------------------*/
+
+.button-55 {
+    align-self: center;
+    background-color: #cacee3;
+    background-image: none;
+    background-position: 0 90%;
+    background-repeat: repeat no-repeat;
+    background-size: 4px 3px;
+    border-radius: 15px 225px 255px 15px 15px 255px 225px 15px;
+    border-style: solid;
+    border-width: 2px;
+    box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px;
+    box-sizing: border-box;
+    color: #41403e;
+    cursor: pointer;
+    display: inline-block;
+    font-family: Neucha, sans-serif;
+    font-size: 1rem;
+    line-height: 23px;
+    outline: none;
+    padding: .75rem;
+    text-decoration: none;
+    transition: all 235ms ease-in-out;
+    border-bottom-left-radius: 15px 255px;
+    border-bottom-right-radius: 225px 15px;
+    border-top-left-radius: 255px 15px;
+    border-top-right-radius: 15px 225px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    margin-left: 80%;
+}
+
+.button-55:hover {
+    box-shadow: rgba(0, 0, 0, .3) 2px 8px 8px -5px;
+    transform: translate3d(0, 2px, 0);
+    background: #10558d;
+}
+
+.button-55:focus {
+    box-shadow: rgba(0, 0, 0, .3) 2px 8px 4px -6px;
+}
+
+.cadre1 {
+    border: 2px solid black;
+    /* Définir une bordure de 2 pixels solide noire */
+    padding: 5px;
+    /* Ajouter un espace de remplissage autour du contenu */
+    display: inline-block;
+    /* Permettre au cadre de s'ajuster à la taille du contenu */
+    font-size: 24px;
+    /* Augmenter la taille de la police */
+    box-shadow: 3px 3px 5px rgb(5, 68, 104);
+    width: 100px;
+    padding-left: 40px;
+    margin-left: 230px;
+    position: relative;
+    bottom: 60px;
+}
+
+.cadre {
+    border: 2px solid black;
+    /* Définir une bordure de 2 pixels solide noire */
+    padding: 5px;
+    /* Ajouter un espace de remplissage autour du contenu */
+    display: inline-block;
+    /* Permettre au cadre de s'ajuster à la taille du contenu */
+    font-size: 24px;
+    /* Augmenter la taille de la police */
+    box-shadow: 3px 3px 5px rgb(5, 68, 104);
+    width: 100px;
+    padding-left: 40px;
+    margin-left: 630px;
+    position: relative;
+    bottom: 195px;
+}
+
+#p1 {
+    font-size: 30px;
+    text-shadow: 2px 2px 5px rgb(5, 68, 104);
+}
+
+#p2 {
+    font-size: 30px;
+    text-shadow: 2px 2px 5px rgb(5, 68, 104);
+    margin-left: 500px;
+    position: relative;
+    bottom: 130px;
+}
+
+#btn-a {}
+
+#h1 {
+    margin-right: 60px;
+}
+
+
+/**/
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-gap: 1.5rem;
+    padding: 2rem;
+}
+
+.container .cards li {
+    padding: 1.8rem;
+    background-color: rgb(161, 181, 216);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease-in;
+    margin-bottom: 20px;
+}
+
+.container .cards li:hover {
+    transform: translateY(-10px);
+}
+
+.container .cards li .bx {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 10px;
+    font-size: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container .cards li:nth-child(1) .bx {
+    background-color: var(--light-primary);
+    color: var(--primary);
+}
+
+.container .cards li:nth-child(2) .bx {
+    background-color: var(--light-warning);
+    color: var(--warning);
+}
+
+.container .cards li:nth-child(3) .bx {
+    background-color: var(--light-success);
+    color: var(--success);
+}
+
+.container .cards li .info h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.container .cards li .info p {
+    color: var(--dark);
+}
+
+#duration {
+    width: 65vh;
+}
+
+
+/**/
+
+table,
+td,
+th {
+    border: 1px solid;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.save-btn {
+    margin-top: 30px;
+    background: rgb(5, 68, 104);
+    color: white;
+    width: 100px;
+}
+
+#add-new-category {
+    margin-top: 20px;
+}
+
+.add-category-btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.add-category-btn i {
+    margin-right: 5px;
+}
+
+#transport {
+    margin-right: 20px;
+}
+
+#food {
+    margin-right: 20px;
+}
+
+#vetement {
+    margin-right: 20px;
+}
+
+#lbl3 {
+    margin-top: 20px;
+    margin-left: 30px;
+    width: 400px;
+}
+
+#lbl2 {
+    margin-top: 20px;
+    margin-left: 75px;
+    width: 400px;
+}
+
+#lbl1 {
+    margin-left: 40px;
+    width: 400px;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+}
+
+.input-group i {
+    margin-right: 10px;
+}
+
+.updatecategory,
+.updateexpense {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    /* Une valeur suffisamment élevée pour s'assurer que les formulaires sont au premier plan */
+    display: none;
+    background: #f8f9f9;
+    width: 35%;
+}
+
+.budget-input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+}
+
+input[type="text"],
+select {
+    width: 800px;
+    height: 30px;
+}
+
+#btn1 {
+    background-color: white;
+    color: black;
+    border: 2px solid #04AA6D;
+    margin-top: 40px;
+    margin-left: 700px;
+}
+
+#show-form-btn {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.tag-section {
+    margin-top: 20px;
+}
+
+.tag-section h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.tag-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tag-section table th,
+.tag-section table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.tag-section table th {
+    background-color: #b1d0ee;
+    font-weight: bold;
+}
+
+.tag-section table td {
+    background-color: #fff;
+}
+
+.tag-section table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.tag-section p {
+    margin-top: 10px;
+    color: #666;
+}
+
+
+/* Style the button on hover */
+
+#show-form-btn:hover {
+    background-color: #45a049;
+}
+
+.sidebar {
+    background: rgb(5, 68, 104);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 225px;
+    height: 100%;
+    padding: 20px 0;
+    padding-left: 0px;
+    transition: all 0.5s ease;
+}
+
+#budget-form {
+    display: none;
+}
+
+.sidebar a {
+    text-decoration: none;
+    font-size: 18px;
+    color: #f8f9fa;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidebar a:hover {
+    background-color: #6c757d;
+}
+
+.sidebar .profile {
+    margin-bottom: 30px;
+    text-align: center;
+    color: #f8f9fa;
+}
+
+.sidebar .profile h3 {
+    margin-top: 0;
+}
+
+.sidebar ul {
+    list-style: none;
+    margin-top: 50px;
+    padding-left: 5px;
+}
+
+.sidebar ul li a {
+    display: block;
+    padding: 13px 0px;
+    border-bottom: 1px solid #10558d;
+    color: rgb(241, 237, 237);
+    font-size: 17px;
+    position: relative;
+}
+
+.sidebar ul li a .icon {
+    color: #dee4ec;
+    width: 30px;
+    display: inline-block;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+    color: #0c7db1;
+    background: white;
+    border-right: 2px solid rgb(5, 68, 104);
+}
+
+.wrapper .sidebar ul li a:hover .icon,
+.wrapper .sidebar ul li a.active .icon {
+    color: #0c7db1;
+}
+
+.sidebar ul li a:hover:before,
+.sidebar ul li a.active:before {
+    display: block;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f7f7f7;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.budget-section {
+    background: #666;
+    height: 80px;
+    display: flex;
+}
+
+.categories-list {
+    list-style: none;
+    padding: 0;
+}
+
+.categories-list li {
+    margin-bottom: 10px;
+}
+
+.categories-list li a {
+    display: block;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.3s;
+}
+
+.categories-list li a:hover {
+    background-color: #f0f0f0;
+}
+
+.logout-button {
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logout-button i {
+    margin-right: 5px;
+}
+
+.expense-form {
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.btn {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #45a049;
+}
+
+.balance-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.balance-item {
+    color: #333;
+}
+
+.balance-value {
+    font-weight: bold;
+    color: #4caf50;
+}
+
+.update_budget,
+.update_category {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    border: 2px solid rgb(98, 57, 234);
+    background-color: #fff;
+    cursor: pointer;
+    box-shadow: 0 0 10px #333;
+    overflow: hidden;
+    transition: .3s;
+}
+
+#deletebtn {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    border: 2px solid rgb(231, 50, 50);
+    background-color: #fff;
+    cursor: pointer;
+    box-shadow: 0 0 10px #333;
+    overflow: hidden;
+    transition: .3s;
+}
+
+#deletebtn:hover {
+    background-color: rgb(245, 207, 207);
+    transform: scale(1.2);
+    box-shadow: 0 0 4px #111;
+    transition: .3s;
+}
+
+.update_budget:hover,
+.update_category:hover {
+    background-color: rgb(168, 173, 249);
+    transform: scale(1.2);
+    box-shadow: 0 0 4px #111;
+    transition: .3s;
+}
+
+svg {
+    color: rgb(231, 50, 50);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: .3s;
+}
+
+#deletebtn:focus svg {
+    opacity: 0;
+    transition: .3s;
+}
+
+.update_budget:focus svg,
+.update_category:focus svg {
+    opacity: 0;
+    transition: .3s;
+}
+
+.updatebudget,
+.categoryForm {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    /* Une valeur suffisamment élevée pour s'assurer que les formulaires sont au premier plan */
+    display: none;
+    background: #f8f9f9;
+    width: 35%;
+}

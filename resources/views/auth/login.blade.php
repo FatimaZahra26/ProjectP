@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout >
     <x-auth-card>
         <x-slot name="logo" >
             <img src="{{ asset('assets/walleticon.png') }}" alt="Example Image" style="border-radius: 10%">

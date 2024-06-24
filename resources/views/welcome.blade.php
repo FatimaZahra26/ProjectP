@@ -93,7 +93,7 @@
             display: none;
         }
 
-        @media screen and (max-width: 800px) {
+        @media only screen and (max-width: 800px) {
             nav {
                 position: fixed;
                 z-index: 3;
@@ -170,6 +170,43 @@
             body {
                 background-position: initial;
             }
+            .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 50px;
+            padding-top: 100%;
+            margin-left:10px;
+        }
+            .content-container {
+               
+                display: inline;
+                margin-top: 1000px;
+                align-items: center;
+            }
+            .content-container h2 {
+                margin-bottom: 20px;
+               margin-top: 80px;
+            }
+            .content-container img {
+               width: 100%;
+               margin-left:-80px;
+               margin-bottom: 50px;
+            }
+            .NoMoreSurprises{
+                width: 100%;
+               margin-left:-80px;
+            }
+             .getstarted h2{
+                text-align: center;
+                margin:0 auto;
+                margin-left:-65%;
+            }
+            .getstarted button{
+                margin-left:-50px;
+                margin-top:20px;
+            }
+
+
         }
 
         .toggle .line-one {
@@ -343,6 +380,7 @@
                 height: 86px;
                 line-height: 88px;
             }
+
         }
 
         /**/
@@ -467,6 +505,21 @@
             .album .img.img-last {
                 margin: 0 0 5px 0;
             }
+
+            .container {
+                display: inline;
+                width: 500px;
+
+            }
+
+            .container-content {
+                display: inline;
+            }
+
+            .container-content h2 {
+                font-size: 10px;
+            }
+
         }
 
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800&amp;display=swap');
@@ -580,7 +633,7 @@
                 width: 100%;
             }
         }
-
+/**/
         @media (max-width: 768px) {
             .wk-tab-1 {
                 width: 8.333333%;
@@ -741,14 +794,17 @@
                 informed decisions to achieve your financial goals.</p>
         </div>
         <div id="HowItWorks">
-            <img src="{{ asset('assets/home.png') }}" alt="Home Image">
+            <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script> 
+
+    <dotlottie-player src="https://lottie.host/04e79dcd-d351-4161-ab31-0965eab88bb8/X82Iz8KaHA.json" background="transparent" speed="1" style="width: 500px; height: 500px;" loop autoplay></dotlottie-player>
         </div>
     </div>
     <div>
         <div class="container" style="margin-top: 10%;margin-left:50px">
             <div class="content-container">
-                <img src="{{ asset('assets/goodBudget.jpg') }}" alt="" style="width: 80%;height:80%">
-            </div>
+                <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script> 
+
+                <dotlottie-player src="https://lottie.host/b51aa552-7b0d-4a07-a8cc-bbbb7a6736c4/9fQbImqUdh.json" background="transparent" speed="1" style="width: 500px; height: 500px;" loop autoplay></dotlottie-player>            </div>
             <div class="content-container">
                 <h1 style="color: #150a50">Become a Goodbudgeter</h1>
                 <p>Embark on your journey to becoming a savvy budgeter with our intuitive WiseWalletPro app. Gain the
@@ -775,9 +831,10 @@
                     where your money is going, ensuring no surprises catch you off guard. Take control of your financial
                     future and enjoy a stress-free approach to managing your money with WiseWalletPro.</p>
             </div>
-            <div>
-                <img src="{{ asset('assets/surprise.png') }}" alt=""
-                    style="width: 80%;height:80%;margin-left:100px;">
+            <div class="NoMoreSurprises">
+                <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script> 
+
+                <dotlottie-player src="https://lottie.host/bf025842-4c13-4ef3-ab1f-09d66f4a6f17/6K21TcDdQb.json" background="transparent" speed="1" style="width: 500px; height: 500px;" loop autoplay></dotlottie-player>
             </div>
         </div>
     </div>
